@@ -1,8 +1,10 @@
 package com.uff.sem_barreiras.service;
 
 import com.uff.sem_barreiras.dao.EstadoDao;
+import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.NotFoundException;
 import com.uff.sem_barreiras.model.Estado;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,12 +22,24 @@ public class EstadoService {
     }
 
     // encontrar estado pelo id
-    public Estado encontrarEstado(Integer id) throws NotFoundException{
+    public Estado encontrarEstado(Integer id) throws NotFoundException , IdNullException
+    {
+        Estado estado = null;
+        if(id == null){
+            throw new IdNullException("Estado");
+        }else{
+            Optional <Estado> estadoOptional;
         try{
-            return this.estadoDao.findById(id).get();
+           estadoOptional = this.estadoDao.findById(id);
         }catch(final Exception e ){
-            throw new NotFoundException("Estado", id);
+            throw new NotFoundException("Escolaridade", id);
         }
+        if(!estadoOptional.isPresent()){
+            throw new NotFoundException("Empresa", id);
+        }
+        estado = estadoOptional.get();
+        return estado;
+      }
     }
 
     @Autowired
