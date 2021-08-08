@@ -1,5 +1,7 @@
 package com.uff.sem_barreiras.service;
 
+import java.util.Optional;
+
 import com.uff.sem_barreiras.dao.CursoDao;
 import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
@@ -20,36 +22,73 @@ public class CursoService {
     }
 
     public Curso criarCurso(Curso curso)throws InsertException{
+        if(curso == null){
+            throw new InsertException("o Curso");
+        }else{
         try{
-           return this.cursoDao.save(curso);
-        }catch(final Exception e){
+
+            this.cursoDao.save(curso);
+        }
+        catch(final Exception e){
             throw new InsertException("o Curso");
         }
+        return curso;
+    }
     }
 
     public Curso encontrarCurso(Integer id) throws NotFoundException {
+       Curso curso = null;
+       if(id == null){
+           throw new NotFoundException("Curso", id);
+       }else{
+           Optional <Curso> cursoOptional;
         try{
-            return this.cursoDao.findById(id).get();
+            cursoOptional = this.cursoDao.findById(id);
         }catch(final Exception e){
             throw new NotFoundException("Curso", id);
         }
+        if(!cursoOptional.isPresent()){
+            throw new NotFoundException("Curso", id);
+        }
+        curso=cursoOptional.get();
+     }
+     return curso;
     }
     
     public void deletarCurso(Integer id) throws NotFoundException{  
+        
+       if(id == null){
+           throw new NotFoundException("Curso", id);
+       }else{
+           
         try{
-            this.cursoDao.deleteById(id);
-        }catch(final Exception e ){
+             this.cursoDao.deleteById(id);
+        }catch(final Exception e){
             throw new NotFoundException("Curso", id);
         }
+       
+     }
     }
 
     // alterar curso
     public Curso alterarCurso(Curso curso) throws IdNullException{
         if(curso.getId() == null){
             throw new IdNullException("Curso");
-        }
+        }else{
         this.cursoDao.save(curso);
-        return this.cursoDao.findById(curso.getId()).get();
+        Optional <Curso> cursoOptional;
+        try{
+            cursoOptional = this.cursoDao.findById(curso.getId());
+        }catch(final Exception e){
+            throw new  IdNullException("Curso");
+        }
+        if(!cursoOptional.isPresent()){
+            throw new IdNullException("Curso");
+        }
+        curso = cursoOptional.get();
+        
+        }
+        return curso;
     }
 
     @Autowired

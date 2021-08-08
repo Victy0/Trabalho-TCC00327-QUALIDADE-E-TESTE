@@ -80,7 +80,7 @@ public class EmpresaController {
 
     // mapeamento Post para login de empresa
     @PostMapping("/empresa/login")
-    public ResponseObject loginEmpresa(@RequestBody final LoginObject login  ){
+    public ResponseObject loginEmpresa(@RequestBody final LoginObject login  )throws IdNullException{
         Integer id = this.empresaService.getIdByEmail(login.getEmail());
         if(id == null){
             return new ResponseObject(false, "Empresa não cadastrada");
