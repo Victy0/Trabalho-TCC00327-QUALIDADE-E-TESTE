@@ -24,9 +24,6 @@ public class VagaService {
     //listar vagas
     public Page<Vaga> listarVagas( Specification<Vaga> spec, final Pageable page )
     {
-        // criar classe para filtragem
-
-        
         final Page<Vaga> base =  this.vagaDao.findAll(spec, page);
         
         return base;

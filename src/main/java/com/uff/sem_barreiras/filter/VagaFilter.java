@@ -1,21 +1,20 @@
 package com.uff.sem_barreiras.filter;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 
 import com.uff.sem_barreiras.model.Deficiencia;
+import com.uff.sem_barreiras.model.Vaga;
 
 
 public class VagaFilter<T>
-	extends DefaultFilter<T>
+	extends Filter<T>
 {
 
     private static final String EMPRESA = "empresa";
@@ -118,9 +117,9 @@ public class VagaFilter<T>
 		}
 
         if ( deficiencia != null )
-		{
-            // PRECISA SER IMPLEMENTADA
-            //predicate = cb.and( predicate, root.get( "deficiencias" ).get("id").in( deficiencia[0] ) );	
+		{	
+			Join<Vaga, Deficiencia> defJoin = root.join( "deficiencias" );
+			predicate = cb.and( predicate, cb.equal( defJoin.get("id"), deficiencia[0] ) );
 		}
 
 		return predicate;
