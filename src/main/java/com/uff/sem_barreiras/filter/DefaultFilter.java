@@ -1,157 +1,100 @@
 package com.uff.sem_barreiras.filter;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.springframework.data.jpa.domain.Specification;
+public class DefaultFilter<T> 
+ extends Filter<T>
+ {
+    private static final String NOME = "nome";
 
-public class DefaultFilter<T> implements Specification<T>{
+	private static final String DESCRICAO = "descricao";
 
-    public DefaultFilter( final Map<String, String[]> params )
-	{
-		this.params = params;
-	}
-	
-	private final Map<String, String[]> params;
+    private static final String ESTADO = "estado";
 
-	protected Map<String, String[]> getParams()
-	{
-		return this.params;
-	}
+    private static final String CIDADE = "cidade";
 
-    // construir clausulas dinamicamente
-	public Predicate buildClause(
-		Predicate clauseForPossibleValues,
-		final String currentFilterParam,
-		final CriteriaBuilder cb,
-		final Root<T> root,
-		final String paramValue )
-	{
-		final Path<Object> field = this.getCompoundField( root, currentFilterParam );
+	private static final String UF = "uf";
 
-		Predicate equal = paramValue.equals("null") ? cb.isNull(field) : cb.equal( field, this.parseValue( paramValue, field ) );
-		
-		if ( clauseForPossibleValues == null )
+    public DefaultFilter(Map<String, String[]> params) {
+        super(params);
+
+        this.customParams = new HashMap<String, String[]>();
+
+		if ( params.containsKey( NOME ) )
 		{
-			clauseForPossibleValues = equal;
+			this.customParams.put( NOME, params.get( NOME ) );
+			params.remove( NOME );
 		}
-		else
+		if ( params.containsKey( DESCRICAO ) )
 		{
-			clauseForPossibleValues = cb.or( equal, clauseForPossibleValues );
+			this.customParams.put( DESCRICAO, params.get( DESCRICAO ) );
+			params.remove( DESCRICAO );
 		}
 
-		return clauseForPossibleValues;
-	}
-
-	protected <C> Path<C> getCompoundField( final Root<T> root, final String currentFilterParam )
-	{
-		String[] attributeChain = currentFilterParam.split( "\\." );
-
-		Path<C> field = root.<C> get( attributeChain[0] );
-
-		attributeChain = Arrays.copyOfRange( attributeChain, 1, attributeChain.length );
-
-		for ( final String currentAttribute : attributeChain )
+        if ( params.containsKey( ESTADO ) )
 		{
-			field = field.get( currentAttribute );
+			this.customParams.put( ESTADO, params.get( ESTADO ) );
+			params.remove( ESTADO );
 		}
 
-		return field;
-	}
-
-    // parse do nome do campo para o nome do atributo no Java
-	private Object parseValue( final String paramValueStr, final Path<Object> field )
-	{
-		final Class< ? extends Object> javaType = field.getJavaType();
-
-		if ( javaType.equals( Boolean.class ) )
+        if ( params.containsKey( CIDADE ) )
 		{
-			if ( !"true".equals( paramValueStr ) && !"false".equals( paramValueStr ) )
-			{
-				throw new ClassCastException();
-			}
-
-			return "true".equals( paramValueStr );
-
-		}
-		else if ( javaType.equals( Integer.class ) )
-		{
-			return Integer.valueOf( paramValueStr );
-		}
-		else if ( javaType.equals( Double.class ) )
-		{
-			return Double.valueOf( paramValueStr );
+			this.customParams.put( CIDADE, params.get( CIDADE ) );
+			params.remove( CIDADE );
 		}
 
-		return javaType.cast( paramValueStr );
-	}
+		if ( params.containsKey( UF ) )
+		{
+			this.customParams.put( UF, params.get( UF ) );
+			params.remove( UF );
+		}
 
-	@Override
+    }
+
+    @Override
 	public Predicate toPredicate( final Root<T> root, final CriteriaQuery< ? > query, final CriteriaBuilder cb )
 	{
-		final Map<String, String[]> params = this.getParams();
-		final Set<String> keySet = params.keySet();
+		Predicate predicate = super.toPredicate( root, query, cb );
+        final String[] nome = this.customParams.get( NOME );
+		final String[] descricao = this.customParams.get( DESCRICAO );
+        final String[] estado = this.customParams.get( ESTADO );
+        final String[] cidade = this.customParams.get( CIDADE );
+		final String[] uf = this.customParams.get( UF );
 
-		Predicate conditionals = cb.conjunction();
-
-		// itera entre os campos para filtrar
-
-		for ( final String currentFilterParam : keySet )
+        if ( nome != null )
 		{
-
-			if ( !"null".equals( currentFilterParam ) )
-			{
-				final String[] paramValues = params.get( currentFilterParam );
-				Predicate clauseForPossibleValues = null;
-				final Path<Object> field = getCompoundField( root, currentFilterParam );
-
-				if ( paramValues.length == 0 )
-				{
-					clauseForPossibleValues = cb.disjunction();
-				}
-				if ( ( paramValues.length == 1 ) )
-				{
-					if ( paramValues[0].equals( "" ) )
-					{
-						clauseForPossibleValues = cb.isNotNull( field );
-					}
-					else if ( paramValues[0].equals( "NULL" ) )
-					{
-						clauseForPossibleValues = cb.isNull( field );
-					}
-					else
-					{
-						for ( final String paramValue : paramValues )
-						{
-							clauseForPossibleValues = this.buildClause( clauseForPossibleValues, currentFilterParam, cb, root, paramValue );
-						}
-					}
-				}
-				else
-				{
-					final List<Object> paramsList = Arrays
-						.asList( paramValues )
-						.stream()
-						.map( value -> this.parseValue( value, field ) )
-						.collect( Collectors.toList() );
-
-					clauseForPossibleValues = field.in( paramsList );
-				}
-
-				conditionals = cb.and( conditionals, clauseForPossibleValues );
-			}
+			predicate = cb.and( predicate, root.get( NOME ).in( nome[0] ) );
 		}
 
-		return conditionals;
+        if ( descricao != null )
+		{
+			predicate = cb.and( predicate, root.get( DESCRICAO ).in( descricao[0] ) );
+		}
+
+        if ( estado != null )
+		{
+			predicate = cb.and( predicate, root.get( ESTADO ).get( "id" ).in( estado[0] ) );
+		}
+
+        if ( cidade != null )
+		{
+			predicate = cb.and( predicate, root.get( CIDADE ).get( "id" ).in( cidade[0] ) );
+		}
+
+		if ( uf != null )
+		{
+			predicate = cb.and( predicate, root.get( UF ).get( "id" ).in( uf[0] ) );
+		}
+
+		return predicate;
 	}
+
+    private Map<String, String[]> customParams;
     
 }

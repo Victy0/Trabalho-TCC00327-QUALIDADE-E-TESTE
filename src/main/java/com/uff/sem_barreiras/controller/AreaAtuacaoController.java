@@ -1,9 +1,14 @@
 package com.uff.sem_barreiras.controller;
 
+import java.util.HashMap;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.uff.sem_barreiras.dto.ResponseObject;
 import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
 import com.uff.sem_barreiras.exceptions.NotFoundException;
+import com.uff.sem_barreiras.filter.DefaultFilter;
 import com.uff.sem_barreiras.model.AreaAtuacao;
 import com.uff.sem_barreiras.service.AreaAtuacaoService;
 
@@ -20,19 +25,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.kaczmarzyk.spring.data.jpa.domain.Like;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-
 @RestController
 public class AreaAtuacaoController {
 
     // mapeamento get para listar todas as areas de atuação
     @GetMapping("/area")
-    public Page<AreaAtuacao> listarAreas(
-        @And( value = {	@Spec( path = "descricao", spec = Like.class)} ) final Specification<AreaAtuacao> spec,
-		@PageableDefault( size = 50, sort = "descricao" ) final Pageable page
-    ){ 
+    public Page<AreaAtuacao> listarAreas( @PageableDefault( size = 50, sort = "descricao" ) final Pageable page, final HttpServletRequest request ){ 
+        Specification<AreaAtuacao> spec = new DefaultFilter<AreaAtuacao>( new HashMap<String, String[]>(request.getParameterMap() ) );
+
         return this.areaAtuacaoService.listarAreaAtuacao(spec, page);
     }
 

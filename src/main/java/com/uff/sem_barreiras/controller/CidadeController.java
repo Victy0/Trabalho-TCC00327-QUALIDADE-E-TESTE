@@ -1,9 +1,14 @@
 package com.uff.sem_barreiras.controller;
 
+import java.util.HashMap;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.uff.sem_barreiras.dto.ResponseObject;
 import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
 import com.uff.sem_barreiras.exceptions.NotFoundException;
+import com.uff.sem_barreiras.filter.DefaultFilter;
 import com.uff.sem_barreiras.model.Cidade;
 import com.uff.sem_barreiras.service.CidadeService;
 
@@ -20,21 +25,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.domain.Like;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-
 @RestController
 public class CidadeController {
 
     // mapeamento Get para listar todos os cidades
     @GetMapping("/cidade")
-    public Page<Cidade> listarCidades(
-        @And( value = {	@Spec( path = "estado.id", params = "estado", spec = Equal.class ),
-                        @Spec( path = "nome", spec = Like.class)} ) final Specification<Cidade> spec,
-		@PageableDefault( size = 50, sort = "nome" ) final Pageable page
-    ) {
+    public Page<Cidade> listarCidades( @PageableDefault( size = 50, sort = "nome" ) final Pageable page, final HttpServletRequest request ) 
+    {
+        Specification<Cidade> spec = new DefaultFilter<Cidade>( new HashMap<String, String[]>(request.getParameterMap() ) );
+
         return this.cidadeService.listarCidades(spec, page);
     }
 
