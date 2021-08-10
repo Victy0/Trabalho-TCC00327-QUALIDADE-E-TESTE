@@ -63,18 +63,20 @@ public class EmpresaService {
 
     // salvar empresa
     public Empresa criarEmpresa(Empresa empresa) throws InsertException, AlredyExistsException {
-        Integer id = this.empresaDao.getIdByEmail(empresa.getEmail());
-        if(id != null){
-            throw new AlredyExistsException("Empresa com e-mail " + empresa.getEmail() + " cadastrado!");
-        }
+       
         if(empresa == null){
             throw new InsertException( "a Empresa" );
         }else{
-            try{
-             this.empresaDao.save(empresa);
-        }catch(Exception e){
-            throw new InsertException( "a Empresa" );
-        }
+            Integer id = this.empresaDao.getIdByEmail(empresa.getEmail());
+            if(id != null || empresa.getNome() == "" || empresa.getCnpj() == "" || empresa.getEndereco() == "" || empresa.getTelefone()== "" ){
+                throw new AlredyExistsException("Empresa com e-mail " + empresa.getEmail() + " cadastrado!");
+            }else{
+                    try{
+                         this.empresaDao.save(empresa);
+                    }catch(Exception e){
+                        throw new InsertException( "a Empresa" );
+                    }
+            }
         }
         return empresa;
     }
@@ -99,7 +101,7 @@ public class EmpresaService {
     // alterar empresa
     public Empresa alterarEmpresa(Empresa empresa) throws IdNullException{
         
-        if(empresa.getId() == null){
+        if(empresa.getId() == null || empresa.getNome() == "" || empresa.getCnpj() == "" || empresa.getEndereco() == "" || empresa.getTelefone()== ""){
             throw new IdNullException("Curso");
         }else{
         this.empresaDao.save(empresa);
