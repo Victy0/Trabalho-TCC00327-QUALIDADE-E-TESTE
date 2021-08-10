@@ -1,5 +1,6 @@
 package com.uff.sem_barreiras.controller;
 
+import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.NotFoundException;
 import com.uff.sem_barreiras.model.Estado;
 import com.uff.sem_barreiras.service.EstadoService;
@@ -32,7 +33,7 @@ public class EstadoController {
 
     //mapeamento Get para recuperar 1 estado informando o id do mesmo
     @GetMapping("/estado/{id}")
-    public Estado encontrarEstado(@PathVariable( value = "id" ) final Integer id) throws NotFoundException{
+    public Estado encontrarEstado(@PathVariable( value = "id" ) final Integer id) throws NotFoundException,IdNullException{
         return this.estadoService.encontrarEstado(id);
     }
 

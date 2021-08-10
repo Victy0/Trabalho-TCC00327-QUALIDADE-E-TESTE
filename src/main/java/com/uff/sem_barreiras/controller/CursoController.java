@@ -54,7 +54,7 @@ public class CursoController {
 
      // mapeamento Put para recuperar 1 curso informando o id do mesmo
      @PutMapping("/curso/alterar")
-     public Curso alterarcurso(@RequestBody final Curso curso) throws NotFoundException, IdNullException {
+     public Curso alterarcurso(@RequestBody final Curso curso) throws NotFoundException, IdNullException , InsertException {
         return this.cursoService.alterarCurso(curso);
      }
     

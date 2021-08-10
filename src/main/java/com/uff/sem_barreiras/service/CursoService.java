@@ -25,6 +25,9 @@ public class CursoService {
         if(curso == null){
             throw new InsertException("o Curso");
         }else{
+            if(curso.getDescricao() == "" || curso.getHyperLink() == "" ){
+                throw new InsertException("o Curso");
+            }else{
         try{
 
             this.cursoDao.save(curso);
@@ -35,6 +38,8 @@ public class CursoService {
         return curso;
     }
     }
+    }
+    
 
     public Curso encontrarCurso(Integer id) throws NotFoundException {
        Curso curso = null;
@@ -71,10 +76,13 @@ public class CursoService {
     }
 
     // alterar curso
-    public Curso alterarCurso(Curso curso) throws IdNullException{
+    public Curso alterarCurso(Curso curso) throws IdNullException, InsertException{
         if(curso.getId() == null){
             throw new IdNullException("Curso");
         }else{
+            if(curso.getDescricao() == "" || curso.getHyperLink() == ""){
+                throw new InsertException("o Curso");
+            }else{
         this.cursoDao.save(curso);
         Optional <Curso> cursoOptional;
         try{
@@ -89,8 +97,11 @@ public class CursoService {
         
         }
         return curso;
+     }
     }
 
     @Autowired
     private CursoDao cursoDao;
 }
+
+

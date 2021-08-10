@@ -43,6 +43,9 @@ public class VagaService {
         }
         else
         {
+            if(vaga.getFuncao()==""||vaga.getRequisitosNecessarios()==""||vaga.getRequisitosDesejados()==""||vaga.getDuracaoVaga()==null){
+                throw new InsertException( "a Vaga" );
+            }else{
             vaga.setDataCriacao(new Date());
 
             try
@@ -52,6 +55,7 @@ public class VagaService {
             catch(Exception e)
             {
                 throw new InsertException( "a Vaga" );
+            }
             }
 
             return vaga;
@@ -105,16 +109,20 @@ public class VagaService {
     }
 
     // alterar vaga
-    public Vaga alterarVaga(Vaga vaga) throws IdNullException
+    public Vaga alterarVaga(Vaga vaga) throws IdNullException,InsertException
     {
         if(vaga.getId() == null)
         {
             throw new IdNullException("Vaga");
-        }
-
+        }else{
+            if(vaga.getFuncao()==""||vaga.getRequisitosNecessarios()==""||vaga.getRequisitosDesejados()==""||vaga.getDuracaoVaga()==null){
+                throw new InsertException( "a Vaga" );
+            }else{
         this.vagaDao.save(vaga);
 
         return this.vagaDao.findById(vaga.getId()).get();
+            }
+        }
     }
 
     // realizar Candidatura à vaga
