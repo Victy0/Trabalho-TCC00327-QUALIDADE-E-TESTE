@@ -1,5 +1,7 @@
 package com.uff.sem_barreiras.service;
 
+import java.util.Optional;
+
 import com.uff.sem_barreiras.dao.CidadeDao;
 import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
@@ -22,52 +24,65 @@ public class CidadeService {
 
     // encontrar cidade pelo id
     public Cidade encontrarCidade(Integer id) throws NotFoundException {
-        if(id != null) {
-            Cidade cidade = this.cidadeDao.findById(id).get();
-            if(cidade != null){
-                return this.cidadeDao.findById(id).get();
-            } else {
+        Cidade cidade = null;
+
+        if (id == null) {
+            throw new NotFoundException("Cidade", id);
+        } else {
+            Optional<Cidade> cidadeOptional;
+            try{
+                cidadeOptional = this.cidadeDao.findById(id);
+            }catch(final Exception e ){
                 throw new NotFoundException("Cidade", id);
             }
-        } else {
-            throw new NotFoundException("Cidade", id);
+
+            if (!cidadeOptional.isPresent()) {
+                throw new NotFoundException("Cidade", id);
+            }
+
+            cidade = cidadeOptional.get();
         }
-    }
-    //deletar  cidades por id
-    public void deletarCidade(Integer id) throws NotFoundException{ 
-        if(id != null) {
-            this.cidadeDao.deleteById(id);
-        } else {
-            throw new NotFoundException("Curso", id);
-        }
+        return cidade;
     }
 
-    public boolean camposPreenchidos(Cidade cidade){
-        return cidade.getId() != null && !cidade.getNome().isEmpty() && cidade.getEstado() != null;
+    //deletar  cidades por id
+    public void deletarCidade(Integer id) throws NotFoundException{  
+        if (id == null) {
+            throw new NotFoundException("Cidade", id);
+        } else {
+            try{
+                this.cidadeDao.deleteById(id);
+            }catch(final Exception e ){
+                throw new NotFoundException("Cidade", id);
+            }
+        }
     }
 
     // salvar cidade
     public Cidade criarCidade(Cidade cidade) throws InsertException {
-        if(cidade != null){
-            if(camposPreenchidos(cidade)){
-                this.cidadeDao.save(cidade);
-                return this.cidadeDao.findById(cidade.getId()).get();
-            } else {
+        Cidade CidadeSalva = null;
+        if (cidade == null) {
+            throw new InsertException("a Cidade");
+        } else {
+            try{
+                CidadeSalva = this.cidadeDao.save(cidade);
+            }catch(final Exception e){
                 throw new InsertException("a Cidade");
             }
-        } else {
-            throw new InsertException("a Cidade");
         }
+        return CidadeSalva;
     }
 
     // alterar cidade
-    public Cidade alterarCidade(Cidade cidade) throws IdNullException, InsertException{
-        if(camposPreenchidos(cidade)){
-            this.cidadeDao.save(cidade);
-            return this.cidadeDao.findById(cidade.getId()).get();
+    public Cidade alterarCidade(Cidade cidade) throws IdNullException{
+        Cidade cidadeSalva = null;
+        if(cidade.getId() == null){
+            throw new IdNullException("Cidade");
         } else {
-            throw new InsertException("Cidade");
+            cidadeSalva = this.cidadeDao.save(cidade);
         }
+
+        return cidadeSalva;
     }
 
     @Autowired
