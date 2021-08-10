@@ -57,7 +57,7 @@ public class DeficienciaController {
 
      // mapeamento Put para alterar deficiencia
      @PutMapping("/deficiencia/alterar")
-     public Deficiencia alterarDeficiencia(@RequestBody final Deficiencia deficiencia) throws NotFoundException, IdNullException {
+     public Deficiencia alterarDeficiencia(@RequestBody final Deficiencia deficiencia) throws NotFoundException, IdNullException, InsertException {
         return this.deficienciaService.alterarDeficiencia(deficiencia);
      }
 

@@ -43,10 +43,18 @@ public class DeficienciaService {
         }
     }
 
+    public boolean camposPreenchidos(Deficiencia def) {
+        return def.getId() != null && !def.getDescricao().isEmpty();
+    }
+
     // salvar deficiencia
     public Deficiencia criarDeficiencia(Deficiencia deficiencia) throws InsertException {
         if (deficiencia != null) {
-            return this.deficienciaDao.save(deficiencia);
+            if(camposPreenchidos(deficiencia)){
+                return this.deficienciaDao.save(deficiencia);
+            } else {
+                throw new InsertException("a Deficiencia");
+            }
         } else {
             throw new InsertException("a Deficiencia");
         }
@@ -67,12 +75,17 @@ public class DeficienciaService {
     }
 
     // alterar deficiencia
-    public Deficiencia alterarDeficiencia(Deficiencia deficiencia) throws IdNullException{
-        if(deficiencia.getId() == null){
-            throw new IdNullException("Deficiência");
+    public Deficiencia alterarDeficiencia(Deficiencia deficiencia) throws IdNullException, InsertException{
+        if(deficiencia != null) {
+            if(camposPreenchidos(deficiencia)) {
+                this.deficienciaDao.save(deficiencia);
+                return this.deficienciaDao.findById(deficiencia.getId()).get();
+            } else {
+                throw new InsertException("Deficiência");
+            }
+        } else {
+            throw new InsertException("Deficiência");
         }
-        this.deficienciaDao.save(deficiencia);
-        return this.deficienciaDao.findById(deficiencia.getId()).get();
     }
 
     @Autowired
