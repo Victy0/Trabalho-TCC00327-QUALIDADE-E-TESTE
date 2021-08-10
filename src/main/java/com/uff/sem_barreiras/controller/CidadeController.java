@@ -52,7 +52,7 @@ public class CidadeController {
 
     // mapeamento Put para alterar cidade
     @PutMapping("/cidade/alterar")
-    public Cidade alterarCidade(@RequestBody final Cidade cidade) throws NotFoundException, IdNullException {
+    public Cidade alterarCidade(@RequestBody final Cidade cidade) throws NotFoundException, IdNullException, InsertException {
         return this.cidadeService.alterarCidade(cidade);
     }
     //mapeamento Delete para deletar cidade

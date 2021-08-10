@@ -22,37 +22,52 @@ public class CidadeService {
 
     // encontrar cidade pelo id
     public Cidade encontrarCidade(Integer id) throws NotFoundException {
-        try{
-            return this.cidadeDao.findById(id).get();
-        }catch(final Exception e ){
+        if(id != null) {
+            Cidade cidade = this.cidadeDao.findById(id).get();
+            if(cidade != null){
+                return this.cidadeDao.findById(id).get();
+            } else {
+                throw new NotFoundException("Cidade", id);
+            }
+        } else {
             throw new NotFoundException("Cidade", id);
         }
     }
     //deletar  cidades por id
-    public void deletarCidade(Integer id) throws NotFoundException{  
-        try{
+    public void deletarCidade(Integer id) throws NotFoundException{ 
+        if(id != null) {
             this.cidadeDao.deleteById(id);
-        }catch(final Exception e ){
+        } else {
             throw new NotFoundException("Curso", id);
         }
     }
+
+    public boolean camposPreenchidos(Cidade cidade){
+        return cidade.getId() != null && !cidade.getNome().isEmpty() && cidade.getEstado() != null;
+    }
+
     // salvar cidade
     public Cidade criarCidade(Cidade cidade) throws InsertException {
-        try{
-            this.cidadeDao.save(cidade);
-        }catch(Exception e){
+        if(cidade != null){
+            if(camposPreenchidos(cidade)){
+                this.cidadeDao.save(cidade);
+                return this.cidadeDao.findById(cidade.getId()).get();
+            } else {
+                throw new InsertException("a Cidade");
+            }
+        } else {
             throw new InsertException("a Cidade");
         }
-        return this.cidadeDao.findById(cidade.getId()).get();
     }
 
     // alterar cidade
-    public Cidade alterarCidade(Cidade cidade) throws IdNullException{
-        if(cidade.getId() == null){
-            throw new IdNullException("Cidade");
+    public Cidade alterarCidade(Cidade cidade) throws IdNullException, InsertException{
+        if(camposPreenchidos(cidade)){
+            this.cidadeDao.save(cidade);
+            return this.cidadeDao.findById(cidade.getId()).get();
+        } else {
+            throw new InsertException("Cidade");
         }
-        this.cidadeDao.save(cidade);
-        return this.cidadeDao.findById(cidade.getId()).get();
     }
 
     @Autowired
