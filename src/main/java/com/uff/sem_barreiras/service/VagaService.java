@@ -149,8 +149,8 @@ public class VagaService {
         return true;
     }
 
-    // limpar códigos de verificação para acesso da empresa
-    @Scheduled( cron = "${cronSchedule.limpaControleLogin:-}", zone = "${cronSchedule.timeZone:-}" )
+    // deletar vagas expiradas
+    @Scheduled( cron = "${cronSchedule.vagaDeletar:-}", zone = "${cronSchedule.timeZone:-}" )
     private void deletarVagaPassado30Dias() throws NotFoundException
     {
         List<Integer> idsParaRemover = this.vagaDao.recuperaVagaPassado30Dias();
@@ -164,17 +164,29 @@ public class VagaService {
         }
     }
 
-    // Subquery para filtro de deficiencia
-    public Specification<Vaga> hasDeficiencia(final Integer deficienciaId) 
+    // informar vagas que irão expirar
+    @Scheduled( cron = "${cronSchedule.vagaExpirar:-}", zone = "${cronSchedule.timeZone:-}" )
+    private void notificarVagaQueIraExperiar() throws NotFoundException
     {
+        List<Integer> idsVagas = this.vagaDao.recuperaVagaPassado27Dias();
 
-        List<Integer> idList = this.vagaDao.idVagasByDeficiencia(deficienciaId);
-        return ( root, query, cb ) -> {
+        for(Integer idVaga : idsVagas)
+        {
+            if( idVaga != null )
+            {
+                Vaga vaga = this.vagaDao.getOne(idVaga);
 
-            return root.get( "id" ).in( idList );
-        };
+                String url = String.format("http://sem_bareiras.herokuapp.com/acessar-vaga/%s", vaga.getId());
 
+                String content = String.format("A vaga %s cadastrada está preste a expirar em 3 dias.\nEdite a vaga caso deseje que ela não seja deletada\nLink da vaga: %s", vaga.getDescricao(), url );
+
+                this.emailService.enviar(vaga.getEmpresa().getEmail(), "SEM BARREIRAS INFORMA - Vaga próximo de expirar", content);
+
+            }   
+        }
     }
+
+    
 
     @Autowired
     private VagaDao vagaDao;
