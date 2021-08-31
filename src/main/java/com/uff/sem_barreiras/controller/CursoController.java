@@ -1,6 +1,7 @@
 package com.uff.sem_barreiras.controller;
 
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -57,9 +58,15 @@ public class CursoController {
     @PutMapping("/curso/alterar")
     public Curso alterarcurso(@RequestBody final Curso curso) throws NotFoundException, IdNullException, InsertException 
     {
-    return this.cursoService.alterarCurso(curso);
+        return this.cursoService.alterarCurso(curso);
     }
     
+    @PostMapping("/vingularVaga/{cursoId}")
+    public boolean vincularVagaCurso( @PathVariable( value = "cursoId") Integer cursoId, @RequestBody final List<Integer> idVagaList) throws InsertException
+    {
+        return this.cursoService.vingularVagas(cursoId, idVagaList);
+    }
+
     @Autowired
-    private CursoService cursoService ;
+    private CursoService cursoService;
 }
