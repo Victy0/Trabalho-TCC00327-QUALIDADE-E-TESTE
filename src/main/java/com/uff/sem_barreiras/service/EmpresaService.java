@@ -34,20 +34,26 @@ public class EmpresaService {
     // encontrar empresa pelo id
     public Empresa encontrarEmpresa(Integer id) throws NotFoundException {
         Empresa empresa = null;
-        if(id == null){
+        if(id == null)
+        {
             throw new NotFoundException("Empresa", id);
-        }else{
+        }
+        else
+        {
             Optional <Empresa> empresaOptional;
-         try{
-             empresaOptional = this.empresaDao.findById(id);
-         }catch(final Exception e){
-             throw new NotFoundException("Empresa", id);
-         }
-         if(!empresaOptional.isPresent()){
-             throw new NotFoundException("Empresa", id);
-         }
-         empresa=empresaOptional.get();
-      }
+            try
+            {
+                empresaOptional = this.empresaDao.findById(id);
+            }
+            catch(final Exception e){
+                throw new NotFoundException("Empresa", id);
+            }
+            if(!empresaOptional.isPresent())
+            {
+                throw new NotFoundException("Empresa", id);
+            }
+            empresa=empresaOptional.get();
+        }
       return empresa;
     }
 

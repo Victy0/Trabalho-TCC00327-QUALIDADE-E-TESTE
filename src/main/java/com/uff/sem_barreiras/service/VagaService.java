@@ -40,19 +40,22 @@ public class VagaService {
         }
         else
         {
-            if(vaga.getFuncao()==""||vaga.getRequisitosNecessarios()==""||vaga.getRequisitosDesejados()==""||vaga.getDuracaoVaga()==null){
+            if(vaga.getFuncao()==""||vaga.getRequisitosNecessarios()==""||vaga.getRequisitosDesejados()==""||vaga.getDuracaoVaga()==null)
+            {
                 throw new InsertException( "a Vaga" );
-            }else{
-            vaga.setDataCriacao(new Date());
+            }
+            else
+            {
+                vaga.setDataCriacao(new Date());
 
-            try
-            {
-                this.vagaDao.save(vaga);
-            }
-            catch(Exception e)
-            {
-                throw new InsertException( "a Vaga" );
-            }
+                try
+                {
+                    this.vagaDao.save(vaga);
+                }
+                catch(Exception e)
+                {
+                    throw new InsertException( "a Vaga" );
+                }
             }
 
             return vaga;
