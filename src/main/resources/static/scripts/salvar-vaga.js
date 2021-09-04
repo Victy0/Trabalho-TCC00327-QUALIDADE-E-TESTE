@@ -136,7 +136,7 @@ function salvarVaga(){
                 document.getElementById("background-loading").style.display = "none";
                 document.getElementById("loading").style.display = "none";
 
-                if(data.sucesso){
+                if(data.id && data.id != ""){
                     document.getElementById("modal").click();
                     localStorage.setItem("p", "/listar-vaga");
                 }else{

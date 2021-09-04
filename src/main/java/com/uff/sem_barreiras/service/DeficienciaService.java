@@ -1,5 +1,7 @@
 package com.uff.sem_barreiras.service;
 
+import java.util.Optional;
+
 import com.uff.sem_barreiras.dao.DeficienciaDao;
 import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
@@ -23,39 +25,67 @@ public class DeficienciaService {
 
     // encontrar deficiencia pelo id
     public Deficiencia encontrarDeficiencia(Integer id) throws NotFoundException {
-        try{
-            return this.deficienciaDao.findById(id).get();
-        }catch(final Exception e ){
-            throw new NotFoundException("Deficiência", id);
+        Optional<Deficiencia> optionalDeficiencia = null;
+
+        if(id != null) {
+            try{
+                optionalDeficiencia = this.deficienciaDao.findById(id);
+                if(optionalDeficiencia.isPresent()){
+                    return optionalDeficiencia.get();
+                } else {
+                    throw new NotFoundException("Id não encontrado", id);
+                }
+            }catch(final Exception e ){
+                throw new NotFoundException("Deficiência", id);
+            }
+        } else {
+            throw new NotFoundException("Id informado é nulo", id);
         }
+    }
+
+    public boolean camposPreenchidos(Deficiencia def) {
+        return def.getId() != null && !def.getDescricao().isEmpty();
     }
 
     // salvar deficiencia
     public Deficiencia criarDeficiencia(Deficiencia deficiencia) throws InsertException {
-        try{
-            return this.deficienciaDao.save(deficiencia);
-        }catch(Exception e){
+        if (deficiencia != null) {
+            if(camposPreenchidos(deficiencia)){
+                return this.deficienciaDao.save(deficiencia);
+            } else {
+                throw new InsertException("a Deficiencia");
+            }
+        } else {
             throw new InsertException("a Deficiencia");
         }
     }
 
     // deletar deficiencia
     public void deletarDeficiencia(Integer id) throws NotFoundException {
-        
-        try{
-            this.deficienciaDao.deleteById(id);
-        }catch(final Exception e ){
-            throw new NotFoundException("Deficiência", id);
+        if (id != null) {
+            Deficiencia deficiencia = encontrarDeficiencia(id);
+            if (deficiencia != null){
+                this.deficienciaDao.deleteById(id);
+            } else {
+                throw new NotFoundException("Deficiência não encontrada com id: ", id);
+            }
+        } else {
+            throw new NotFoundException("Deficinência, id não informado", id);
         }
     }
 
     // alterar deficiencia
-    public Deficiencia alterarDeficiencia(Deficiencia deficiencia) throws IdNullException{
-        if(deficiencia.getId() == null){
-            throw new IdNullException("Deficiência");
+    public Deficiencia alterarDeficiencia(Deficiencia deficiencia) throws IdNullException, InsertException{
+        if(deficiencia != null) {
+            if(camposPreenchidos(deficiencia)) {
+                this.deficienciaDao.save(deficiencia);
+                return this.deficienciaDao.findById(deficiencia.getId()).get();
+            } else {
+                throw new InsertException("Deficiência");
+            }
+        } else {
+            throw new InsertException("Deficiência");
         }
-        this.deficienciaDao.save(deficiencia);
-        return this.deficienciaDao.findById(deficiencia.getId()).get();
     }
 
     @Autowired

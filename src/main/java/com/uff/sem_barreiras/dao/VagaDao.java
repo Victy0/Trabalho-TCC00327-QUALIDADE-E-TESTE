@@ -16,6 +16,9 @@ public interface VagaDao extends  JpaRepository<Vaga,Integer>, JpaSpecificationE
     @Query(value = "SELECT id_vaga FROM vaga WHERE data_criacao > (CURRENT_DATE - INTERVAL '30 DAY')", nativeQuery = true)
 	List<Integer> recuperaVagaPassado30Dias();
 
+    @Query(value = "SELECT id_vaga FROM vaga WHERE data_criacao > (CURRENT_DATE - INTERVAL '27 DAY')", nativeQuery = true)
+	List<Integer> recuperaVagaPassado27Dias();
+
     @Query(value="select id from vaga v Inner join vaga_x_deficiencia vd on v.id=vd.id_vaga where id_deficiencia=:deficienciaId", nativeQuery=true)
     List<Integer> idVagasByDeficiencia(@Param( "deficienciaId" ) Integer deficienciaId);
 }
