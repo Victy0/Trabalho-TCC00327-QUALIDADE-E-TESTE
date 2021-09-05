@@ -87,7 +87,7 @@ function createMyElement(curso){
 
     var filterParam = "";
     if(document.getElementById("precoMinimo").value != ""){
-        filterParam = filterParam + "&precoMinimo=" + document.getElementById("precoMinimo").value;
+        filterParam = filterParam + "&preco=" + document.getElementById("precoMinimo").value;
     }
     filterParam = filterParam.replace("&", "?");
 

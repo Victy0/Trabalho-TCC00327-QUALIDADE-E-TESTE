@@ -217,17 +217,21 @@ function createMyElement(vagaId, vagaNome, local, empresa, deficiencias){
         url: "/vaga" + filterParam,
         async: false, 
         success: function(data) { 
-
-            for(var i = 0; i < data.totalElements; i++){
-                var vaga = data.content[i];
-        
-                var body = document.getElementById('corpo');
-                var div = document.createElement('div'); 
-                var local = vaga.empresa.cidade.nome + ' - ' + vaga.empresa.cidade.estado.uf;
-                div.innerHTML = createMyElement(vaga.id, vaga.resumo, local, vaga.empresa.nome, vaga.deficiencias);   
-                div.id = vaga.id;                      
-                body.appendChild(div);                 
-                body.insertBefore(div, body.firstChild);
+            if(data.totalElements > 0){
+                for(var i = 0; i < data.totalElements; i++){
+                    var vaga = data.content[i];
+            
+                    var body = document.getElementById('corpo');
+                    var div = document.createElement('div'); 
+                    var local = vaga.empresa.cidade.nome + ' - ' + vaga.empresa.cidade.estado.uf;
+                    div.innerHTML = createMyElement(vaga.id, vaga.resumo, local, vaga.empresa.nome, vaga.deficiencias);   
+                    div.id = vaga.id;                      
+                    body.appendChild(div);                 
+                    body.insertBefore(div, body.firstChild);
+                    var result = document.getElementById('textoResultado');
+                    result.innerHTML = data.totalElements + ' resultados';
+                }
+            }else{
                 var result = document.getElementById('textoResultado');
                 result.innerHTML = data.totalElements + ' resultados';
             }
