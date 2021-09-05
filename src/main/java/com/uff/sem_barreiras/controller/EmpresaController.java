@@ -123,7 +123,7 @@ public class EmpresaController {
 
     // mapeamento Put para alterar empresa
     @PutMapping("/empresa/alterar")
-    public Empresa alterarempresa(@RequestBody final Empresa empresa) throws NotFoundException, IdNullException 
+    public Empresa alterarempresa(@RequestBody final Empresa empresa) throws NotFoundException, IdNullException, InsertWithAttributeException, InsertException 
     {
         return this.empresaService.alterarEmpresa(empresa);
     }

@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import com.uff.sem_barreiras.dao.EmpresaDao;
 import com.uff.sem_barreiras.exceptions.AlredyExistsException;
+import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
 import com.uff.sem_barreiras.exceptions.InsertWithAttributeException;
 import com.uff.sem_barreiras.exceptions.NotFoundException;
@@ -165,5 +166,40 @@ public class EmpresaServiceTest {
         });
     }
     
-    
+    // ************************************************************************************************************** TESTE ALTERAÇÃO DE EMPRESA
+    @Test
+    public void testeAlterarEmpresaComSucesso() throws InsertException, InsertWithAttributeException, IdNullException
+    {
+        Empresa empresa = new Empresa();
+        empresa.setId( 1 );
+        empresa.setCidade( new Cidade());
+        empresa.setCnpj( "0000000000" );
+        empresa.setEmail( "email@email.com" );
+        empresa.setEndereco( "endereco" );
+        empresa.setNome( "nome" );
+        empresa.setTelefone( "0000000000" );
+
+        Assertions.assertNotNull( this.empresaService.alterarEmpresa(empresa) );
+    }
+
+    @Test
+    public void testeAlterarEmpresaSemId() throws InsertException, InsertWithAttributeException, IdNullException
+    {
+        Empresa empresa = new Empresa();
+        empresa.setId(null);
+
+        Assertions.assertThrows(IdNullException.class, () -> {
+            this.empresaService.alterarEmpresa(empresa);
+        });
+    }
+
+    @Test
+    public void testeAlterarEmpresaNula() throws InsertException, AlredyExistsException, InsertWithAttributeException
+    {
+        Assertions.assertThrows(IdNullException.class, () -> {
+            this.empresaService.alterarEmpresa(null);
+        });
+    }
+
+    // OBSERVAÇÃO - teste dos campos obrigatórios mesmo que para criação
 }

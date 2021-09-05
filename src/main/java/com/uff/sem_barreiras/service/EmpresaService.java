@@ -28,12 +28,14 @@ import java.util.Optional;
 public class EmpresaService {
 
     // listar todos os empresas
-    public Page<Empresa> listarEmpresas( Specification<Empresa> spec, final Pageable page ) {
+    public Page<Empresa> listarEmpresas( Specification<Empresa> spec, final Pageable page ) 
+    {
         return this.empresaDao.findAll(spec, page);
     }
 
     // encontrar empresa pelo id
-    public Empresa encontrarEmpresa(Integer id) throws NotFoundException {
+    public Empresa encontrarEmpresa(Integer id) throws NotFoundException 
+    {
         Empresa empresa = null;
         if(id == null)
         {
@@ -61,8 +63,8 @@ public class EmpresaService {
     }
 
     // salvar empresa
-    public Empresa criarEmpresa(Empresa empresa) throws InsertException, AlredyExistsException, InsertWithAttributeException {
-       
+    public Empresa criarEmpresa(Empresa empresa) throws InsertException, AlredyExistsException, InsertWithAttributeException 
+    {   
         if(empresa == null || empresa.getEmail() == null)
         {
             throw new InsertException( "a Empresa" );
@@ -118,24 +120,32 @@ public class EmpresaService {
     }
 
     // alterar empresa
-    public Empresa alterarEmpresa(Empresa empresa) throws IdNullException{
-        
-        if(empresa.getId() == null || empresa.getNome() == "" || empresa.getCnpj() == "" || empresa.getEndereco() == "" || empresa.getTelefone()== ""){
-            throw new IdNullException("Curso");
-        }else{
-        this.empresaDao.save(empresa);
-        Optional <Empresa> empresaOptional;
-        try{
-            empresaOptional = this.empresaDao.findById(empresa.getId());
-        }catch(final Exception e){
-            throw new  IdNullException("Curso");
+    public Empresa alterarEmpresa(Empresa empresa) throws IdNullException, InsertWithAttributeException, InsertException
+    { 
+        //verificação dupla de troca de e-mail no FRONT-END
+        if(empresa == null || empresa.getId() == null)
+        {
+            throw new IdNullException( "a Empresa" );
         }
-        if(!empresaOptional.isPresent()){
-            throw new IdNullException("Curso");
-        }
-        empresa = empresaOptional.get();
-        
-        }
+        else
+        {
+            String campoObrigatoriofaltando = this.campoObrigatorioFaltando(empresa, true);
+            if( campoObrigatoriofaltando != null)
+            {
+                throw new InsertWithAttributeException( "a Empresa", campoObrigatoriofaltando );
+            }
+            else
+            {
+                try
+                {
+                    this.empresaDao.save(empresa);
+                }
+                catch(Exception e)
+                {
+                    throw new InsertException( "a Empresa" );
+                }  
+            }
+        }       
         return empresa;
     }
 
