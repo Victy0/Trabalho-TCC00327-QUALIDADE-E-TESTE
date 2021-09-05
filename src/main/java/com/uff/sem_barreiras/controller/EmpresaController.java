@@ -59,8 +59,7 @@ public class EmpresaController {
     @DeleteMapping("/empresa/{id}")
     public ResponseObject deletarEmpresa(@PathVariable(value = "id") final Integer id) throws NotFoundException 
     {
-        this.empresaService.deletarEmpresa(id);
-        return new ResponseObject(true, "Empresa removida com sucesso");
+        return this.empresaService.deletarEmpresa(id);
     }
 
     // mapeamento Post para login de empresa

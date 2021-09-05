@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.uff.sem_barreiras.dao.EmpresaDao;
+import com.uff.sem_barreiras.dto.ResponseObject;
 import com.uff.sem_barreiras.exceptions.AlredyExistsException;
 import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
@@ -95,10 +96,11 @@ public class EmpresaService {
     }
 
     // deletar empresa
-    public void deletarEmpresa(Integer id) throws NotFoundException {
-        if(id == null)
+    public ResponseObject deletarEmpresa(Integer id) throws NotFoundException 
+    {
+        if(id == null || !empresaDao.findById(id).isPresent())
         {
-            throw new NotFoundException("Curso", id);
+            throw new NotFoundException("Empresa", id);
         }
         else
         {
@@ -112,6 +114,7 @@ public class EmpresaService {
                 throw new NotFoundException("Empresa", id);
             }
         }
+        return new ResponseObject(true, "Empresa removida com sucesso");
     }
 
     // alterar empresa
@@ -177,8 +180,7 @@ public class EmpresaService {
         return null;
     }
 
-
-
+    //recuperar id por e-mail
     public Integer getIdByEmail(String email){
         return this.empresaDao.getIdByEmail(email);
     }

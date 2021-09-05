@@ -37,7 +37,6 @@ public class EmpresaServiceTest {
         Empresa mockEmpresa = mock(Empresa.class);
         when(mockEmpresa.getId()).thenReturn(1);
         Optional<Empresa> optionalEmpresa = Optional.of(mockEmpresa);
-
         when(empresaDao.findById(1)).thenReturn(optionalEmpresa);
 
         Empresa empresa = this.empresaService.encontrarEmpresa( 1 );
@@ -114,49 +113,56 @@ public class EmpresaServiceTest {
         Empresa empresa = new Empresa();
 
         when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
+
         Assertions.assertThrows(InsertException.class, () -> {
             this.empresaService.criarEmpresa( empresa );
         });
 
         empresa.setEmail( "email@email.com" );
-
-        when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
         Assertions.assertThrows(InsertWithAttributeException.class, () -> {
             this.empresaService.criarEmpresa( empresa );
         });
 
         empresa.setNome( "nome");
-
-        when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
         Assertions.assertThrows(InsertWithAttributeException.class, () -> {
             this.empresaService.criarEmpresa( empresa );
         });
 
         empresa.setCnpj( "0000000000" );
-
-        when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
         Assertions.assertThrows(InsertWithAttributeException.class, () -> {
             this.empresaService.criarEmpresa( empresa );
         });
 
         empresa.setCidade( new Cidade());
-
-        when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
         Assertions.assertThrows(InsertWithAttributeException.class, () -> {
             this.empresaService.criarEmpresa( empresa );
         });
         
         empresa.setEndereco( "endereco" );
-
-        when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
         Assertions.assertThrows(InsertWithAttributeException.class, () -> {
             this.empresaService.criarEmpresa( empresa );
         });
         
         empresa.setTelefone( "0000000000" );
-
-        when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
         Assertions.assertNotNull( this.empresaService.criarEmpresa(empresa) );
+    }
+
+    // ************************************************************************************************************** TESTE DELETE DE EMPRESA
+    @Test
+    public void testeDeletarEmpresaComSucesso() throws NotFoundException 
+    {
+        Empresa mockEmpresa = mock(Empresa.class);
+        when(empresaDao.findById(anyInt())).thenReturn(Optional.of(mockEmpresa));
+
+        Assertions.assertEquals("Empresa removida com sucesso", this.empresaService.deletarEmpresa(anyInt()).getMensagem());
+    }
+
+    @Test
+    public void testeDeletarEmpresaComIdNull() throws NotFoundException 
+    {
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            this.empresaService.deletarEmpresa(null);
+        });
     }
     
     
