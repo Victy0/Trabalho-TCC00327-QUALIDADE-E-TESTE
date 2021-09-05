@@ -3,9 +3,7 @@ package com.uff.sem_barreiras.controller;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
-import com.uff.sem_barreiras.dto.LoginObject;
 import com.uff.sem_barreiras.dto.ResponseObject;
 import com.uff.sem_barreiras.exceptions.AlredyExistsException;
 import com.uff.sem_barreiras.exceptions.IdNullException;
@@ -62,73 +60,12 @@ public class EmpresaController {
         return this.empresaService.deletarEmpresa(id);
     }
 
-    // mapeamento Post para login de empresa
-    @PostMapping("/empresa/login")
-    public ResponseObject loginEmpresa(@RequestBody final LoginObject login  )throws IdNullException
-    {
-        Integer id = this.empresaService.getIdByEmail(login.getEmail());
-
-        if(id == null)
-        {
-            return new ResponseObject(false, "Empresa não cadastrada");
-        }
-
-        String cod = this.empresaService.enviarCodigoVerificacao(login.getEmail());
-
-        return new ResponseObject(true, "Código de verificação enviado por e-mail | Código : " + cod );
-
-    }
-
-    // mapeamento Post para confirmar login de empresa por código de autentificação
-    @PostMapping("/empresa/login-confirma")
-    public ResponseObject loginEmpresa( @RequestBody final LoginObject login, HttpSession session  )
-    {
-        
-        if(this.empresaService.confirmarCodigoVerificacao(login.getEmail(), login.getCodigo()))
-        {
-            session.setAttribute("login", this.empresaService.getIdByEmail(login.getEmail()));
-            return new ResponseObject(true, "Autentificação concluída com sucesso");
-        }
-
-        return new ResponseObject(false, "Erro de autentificação");
-
-    }
-
-    // mapeamento Post para recuperar empresa na sessão
-    @PostMapping("/empresa/session")
-    public Object sessionEmpresa( HttpSession session  )
-    {
-        
-        if(session.getAttribute("login") != null)
-        {
-            return session.getAttribute("login");
-        }
-        return null;
-
-    }
-
-    // mapeamento Post para fazer logout
-    @PostMapping("/empresa/logout")
-    public ResponseObject logoutnEmpresa( HttpSession session  )
-    {
-        
-        if(session.getAttribute("login") != null)
-        {
-            session.removeAttribute("login");
-            return new ResponseObject(true, "Logout concluída com sucesso");
-        }
-        return new ResponseObject(false, "Nenhuma empresa com login efetuado");
-
-    }
-
     // mapeamento Put para alterar empresa
     @PutMapping("/empresa/alterar")
     public Empresa alterarempresa(@RequestBody final Empresa empresa) throws NotFoundException, IdNullException, InsertWithAttributeException, InsertException 
     {
         return this.empresaService.alterarEmpresa(empresa);
     }
-
-
 
     @Autowired
     private EmpresaService empresaService;
