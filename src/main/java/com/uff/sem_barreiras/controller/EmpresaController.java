@@ -1,7 +1,6 @@
 package com.uff.sem_barreiras.controller;
 
 import java.util.HashMap;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -11,10 +10,10 @@ import com.uff.sem_barreiras.dto.ResponseObject;
 import com.uff.sem_barreiras.exceptions.AlredyExistsException;
 import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
+import com.uff.sem_barreiras.exceptions.InsertWithAttributeException;
 import com.uff.sem_barreiras.exceptions.NotFoundException;
 import com.uff.sem_barreiras.filter.DefaultFilter;
 import com.uff.sem_barreiras.model.Empresa;
-import com.uff.sem_barreiras.model.Vaga;
 import com.uff.sem_barreiras.service.EmpresaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,19 +45,12 @@ public class EmpresaController {
     @GetMapping("/empresa/{id}")
     public Empresa encontrarEmpresa(@PathVariable(value = "id") final Integer id) throws NotFoundException 
     {
-        try 
-        {
-            return this.empresaService.encontrarEmpresa(id);
-        } 
-        catch (final Exception e) 
-        {
-            throw new NotFoundException("Empresa", id);
-        }
+        return this.empresaService.encontrarEmpresa(id);
     }
 
     // mapeamento Post para criar uma empresa
     @PostMapping("/empresa")
-    public Empresa criarEmpresa(@RequestBody final Empresa empresa) throws InsertException, AlredyExistsException 
+    public Empresa criarEmpresa(@RequestBody final Empresa empresa) throws InsertException, AlredyExistsException, InsertWithAttributeException 
     {
         return this.empresaService.criarEmpresa(empresa);
     }
@@ -67,22 +59,7 @@ public class EmpresaController {
     @DeleteMapping("/empresa/{id}")
     public ResponseObject deletarEmpresa(@PathVariable(value = "id") final Integer id) throws NotFoundException 
     {
-        this.empresaService.deletarEmpresa(id);
-        return new ResponseObject(true, "Empresa removida com sucesso");
-    }
-
-    // mapeamento Get para recuperar vagas de 1 empresa informando o id da mesma
-    @GetMapping("/empresa/{id}/vagas")
-    public List<Vaga> encontrarVagas(@PathVariable(value = "id") final Integer id) throws NotFoundException 
-    {
-        try 
-        {
-            return this.empresaService.encontrarVagas(id);
-        } 
-        catch (final Exception e) 
-        {
-            throw new NotFoundException("Empresa", id);
-        }
+        return this.empresaService.deletarEmpresa(id);
     }
 
     // mapeamento Post para login de empresa
@@ -146,7 +123,7 @@ public class EmpresaController {
 
     // mapeamento Put para alterar empresa
     @PutMapping("/empresa/alterar")
-    public Empresa alterarempresa(@RequestBody final Empresa empresa) throws NotFoundException, IdNullException 
+    public Empresa alterarempresa(@RequestBody final Empresa empresa) throws NotFoundException, IdNullException, InsertWithAttributeException, InsertException 
     {
         return this.empresaService.alterarEmpresa(empresa);
     }
