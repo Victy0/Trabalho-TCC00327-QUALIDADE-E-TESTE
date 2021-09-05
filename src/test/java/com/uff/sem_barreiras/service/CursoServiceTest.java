@@ -14,6 +14,7 @@ import com.uff.sem_barreiras.model.Curso;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,16 +22,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class CursoServiceTest {
 
-    @Autowired
-    private CursoService cursoService;
-
     @Mock
     private CursoDao cursoDao;
+
+    @InjectMocks
+    private CursoService cursoService;
 
     @Test
     public void encontrarCursoComSucesso() throws NotFoundException {
         Curso mockCurso = mock(Curso.class);
-        mockCurso.setId(1);
+        when(mockCurso.getId()).thenReturn(1);
         Optional<Curso> optionalCurso = Optional.of(mockCurso);
 
         when(cursoDao.findById(1)).thenReturn(optionalCurso);
@@ -48,7 +49,7 @@ public class CursoServiceTest {
     @Test
     public void encontrarCursoInexistente() throws NotFoundException {
         when(cursoDao.findById(anyInt())).thenReturn(Optional.empty());
-        Assertions.assertThrows(NotFoundException.class, () -> {this.cursoService.encontrarCurso(2);});
+        Assertions.assertThrows(NotFoundException.class, () -> {this.cursoService.encontrarCurso(1);});
     }
 
     
