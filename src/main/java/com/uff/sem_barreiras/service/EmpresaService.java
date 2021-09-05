@@ -12,7 +12,6 @@ import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
 import com.uff.sem_barreiras.exceptions.NotFoundException;
 import com.uff.sem_barreiras.model.Empresa;
-import com.uff.sem_barreiras.model.Vaga;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -45,43 +44,44 @@ public class EmpresaService {
             {
                 empresaOptional = this.empresaDao.findById(id);
             }
-            catch(final Exception e){
+            catch(final Exception e)
+            {
                 throw new NotFoundException("Empresa", id);
             }
+
             if(!empresaOptional.isPresent())
             {
                 throw new NotFoundException("Empresa", id);
             }
-            empresa=empresaOptional.get();
+            empresa = empresaOptional.get();
         }
-      return empresa;
-    }
-
-    // encontrar vagas da empresa pelo id
-    public List<Vaga> encontrarVagas(Integer id) throws NotFoundException {
-        try{
-            this.empresaDao.findById(id).get();
-            return this.empresaDao.getVagas(id);
-        }catch(final Exception e ){
-            throw new NotFoundException("Empresa", id);
-        }
+        return empresa;
     }
 
     // salvar empresa
     public Empresa criarEmpresa(Empresa empresa) throws InsertException, AlredyExistsException {
        
-        if(empresa == null){
+        if(empresa == null)
+        {
             throw new InsertException( "a Empresa" );
-        }else{
+        }
+        else
+        {
             Integer id = this.empresaDao.getIdByEmail(empresa.getEmail());
-            if(id != null || empresa.getNome() == "" || empresa.getCnpj() == "" || empresa.getEndereco() == "" || empresa.getTelefone()== "" ){
-                throw new AlredyExistsException("Empresa com e-mail " + empresa.getEmail() + " cadastrado!");
-            }else{
-                    try{
-                         this.empresaDao.save(empresa);
-                    }catch(Exception e){
-                        throw new InsertException( "a Empresa" );
-                    }
+            if(id != null || empresa.getNome() == "" || empresa.getCnpj() == "" || empresa.getEndereco() == "" || empresa.getTelefone()== "" )
+            {
+                throw new AlredyExistsException("Empresa com e-mail " + empresa.getEmail() + "já se encontra cadastrado no sistema!");
+            }
+            else
+            {
+                try
+                {
+                    this.empresaDao.save(empresa);
+                }
+                catch(Exception e)
+                {
+                    throw new InsertException( "a Empresa" );
+                }
             }
         }
         return empresa;
@@ -89,19 +89,22 @@ public class EmpresaService {
 
     // deletar empresa
     public void deletarEmpresa(Integer id) throws NotFoundException {
-        if(id == null){
+        if(id == null)
+        {
             throw new NotFoundException("Curso", id);
-        }else{
-            
-         try{
-            this.empresaDao.deleteVagasDaEmpresa(id);
-            this.empresaDao.deleteById(id);
-         }catch(final Exception e){
-             throw new NotFoundException("Empresa", id);
-         }
-        
-      }
-       
+        }
+        else
+        {
+            try
+            {
+                this.empresaDao.deleteVagasDaEmpresa(id);
+                this.empresaDao.deleteById(id);
+            }
+            catch(final Exception e)
+            {
+                throw new NotFoundException("Empresa", id);
+            }
+        }
     }
 
     // alterar empresa
@@ -124,8 +127,9 @@ public class EmpresaService {
         
         }
         return empresa;
-        
     }
+
+    
 
     public Integer getIdByEmail(String email){
         return this.empresaDao.getIdByEmail(email);
