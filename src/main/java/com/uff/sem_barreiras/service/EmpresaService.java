@@ -1,11 +1,5 @@
 package com.uff.sem_barreiras.service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.uff.sem_barreiras.dao.EmpresaDao;
 import com.uff.sem_barreiras.dto.ResponseObject;
 import com.uff.sem_barreiras.exceptions.AlredyExistsException;
@@ -19,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -190,64 +183,6 @@ public class EmpresaService {
         return null;
     }
 
-    //recuperar id por e-mail
-    public Integer getIdByEmail(String email){
-        return this.empresaDao.getIdByEmail(email);
-    }
-
-    public String enviarCodigoVerificacao(String email) throws IdNullException{
-
-        Integer id = this.empresaDao.getIdByEmail(email);
-        Long milis = new Date().getTime();
-        controleLogin.put(id, milis); 
-        if(id == null){
-            throw new IdNullException("Email;");
-        }else{
-        String content = String.format("E-mail enviado devido a solicitação de login em Sem Barreiras\n \n Código de verificação: %s", milis.toString().substring(milis.toString().length() - 4, milis.toString().length()) );
-
-        this.emailService.enviar(email, "Sem Barreiras - Código de verificação", content);
-
-        return milis.toString().substring(milis.toString().length() - 4, milis.toString().length());
-        }
-    }
-
-    public Boolean confirmarCodigoVerificacao(String email, String codigo){
-
-        Integer id = this.empresaDao.getIdByEmail(email);
-
-        if(!controleLogin.containsKey(id)){
-            return false;
-        }
-
-        Long milis = controleLogin.get(id);
-        if( !milis.toString().substring(milis.toString().length() - 4, milis.toString().length()).equals(codigo)){
-            return false;
-        }
-
-        controleLogin.remove(id);
-        return true;
-    }
-
-    @Scheduled( cron = "${cronSchedule.limpaControleLogin:-}", zone = "${cronSchedule.timeZone:-}" )
-    private void limpaControleLogin(){
-        List<Integer> listaDeKeyParaRemover = new ArrayList<Integer>();
-        Long milis = new Date().getTime();
-        for (Map.Entry<Integer, Long> entry : controleLogin.entrySet()) {
-            long difference = milis - entry.getValue();
-            if(difference > 600000){
-                listaDeKeyParaRemover.add(entry.getKey());
-            }
-        }
-        for(Integer keyParaRemover : listaDeKeyParaRemover){
-            controleLogin.remove(keyParaRemover);
-        }
-    }
-
     @Autowired
     private EmpresaDao empresaDao;
-
-    @Autowired
-    private EmailService emailService;
-
-    private Map<Integer, Long> controleLogin = new HashMap<Integer, Long>();
 }
