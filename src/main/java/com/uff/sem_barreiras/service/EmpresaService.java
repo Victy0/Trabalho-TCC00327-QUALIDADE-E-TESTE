@@ -10,6 +10,7 @@ import com.uff.sem_barreiras.dao.EmpresaDao;
 import com.uff.sem_barreiras.exceptions.AlredyExistsException;
 import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
+import com.uff.sem_barreiras.exceptions.InsertWithAttributeException;
 import com.uff.sem_barreiras.exceptions.NotFoundException;
 import com.uff.sem_barreiras.model.Empresa;
 
@@ -59,18 +60,24 @@ public class EmpresaService {
     }
 
     // salvar empresa
-    public Empresa criarEmpresa(Empresa empresa) throws InsertException, AlredyExistsException {
+    public Empresa criarEmpresa(Empresa empresa) throws InsertException, AlredyExistsException, InsertWithAttributeException {
        
-        if(empresa == null)
+        if(empresa == null || empresa.getEmail() == null)
         {
             throw new InsertException( "a Empresa" );
         }
         else
         {
             Integer id = this.empresaDao.getIdByEmail(empresa.getEmail());
-            if(id != null || empresa.getNome() == "" || empresa.getCnpj() == "" || empresa.getEndereco() == "" || empresa.getTelefone()== "" )
+            if(id != null )
             {
                 throw new AlredyExistsException("Empresa com e-mail " + empresa.getEmail() + "já se encontra cadastrado no sistema!");
+            }
+
+            String campoObrigatoriofaltando = this.campoObrigatorioFaltando(empresa, false);
+            if( campoObrigatoriofaltando != null)
+            {
+                throw new InsertWithAttributeException( "a Empresa", campoObrigatoriofaltando );
             }
             else
             {
@@ -129,7 +136,48 @@ public class EmpresaService {
         return empresa;
     }
 
-    
+    // validar campos obrigatórios de empresa
+    public String campoObrigatorioFaltando(Empresa empresa, boolean alteracao)
+    {
+        if( alteracao && empresa.getId() == null )
+        {
+            return "id";
+        }
+
+        if( empresa.getEmail() == "" || empresa.getEmail() == null )
+        {
+            return "email";
+        }
+        
+        if( empresa.getNome() == "" || empresa.getNome() == null )
+        {
+            return "nome";
+        }
+
+        if( empresa.getCnpj() == "" || empresa.getCnpj() == null )
+        {
+            return "cnpj";
+        }
+
+        if( empresa.getEndereco() == "" || empresa.getEndereco() == null )
+        {
+            return "endereço";
+        }
+
+        if( empresa.getTelefone() == "" || empresa.getTelefone() == null )
+        {
+            return "telefone";
+        }
+
+        if( empresa.getCidade() == null )
+        {
+            return "cidade";
+        }
+
+        return null;
+    }
+
+
 
     public Integer getIdByEmail(String email){
         return this.empresaDao.getIdByEmail(email);

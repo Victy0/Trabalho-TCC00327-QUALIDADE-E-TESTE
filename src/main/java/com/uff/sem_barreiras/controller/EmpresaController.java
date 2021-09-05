@@ -10,6 +10,7 @@ import com.uff.sem_barreiras.dto.ResponseObject;
 import com.uff.sem_barreiras.exceptions.AlredyExistsException;
 import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
+import com.uff.sem_barreiras.exceptions.InsertWithAttributeException;
 import com.uff.sem_barreiras.exceptions.NotFoundException;
 import com.uff.sem_barreiras.filter.DefaultFilter;
 import com.uff.sem_barreiras.model.Empresa;
@@ -49,7 +50,7 @@ public class EmpresaController {
 
     // mapeamento Post para criar uma empresa
     @PostMapping("/empresa")
-    public Empresa criarEmpresa(@RequestBody final Empresa empresa) throws InsertException, AlredyExistsException 
+    public Empresa criarEmpresa(@RequestBody final Empresa empresa) throws InsertException, AlredyExistsException, InsertWithAttributeException 
     {
         return this.empresaService.criarEmpresa(empresa);
     }

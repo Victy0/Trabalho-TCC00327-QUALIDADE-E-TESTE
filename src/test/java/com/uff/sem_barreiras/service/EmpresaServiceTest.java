@@ -1,13 +1,18 @@
 package com.uff.sem_barreiras.service;
 
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
 import com.uff.sem_barreiras.dao.EmpresaDao;
+import com.uff.sem_barreiras.exceptions.AlredyExistsException;
+import com.uff.sem_barreiras.exceptions.InsertException;
+import com.uff.sem_barreiras.exceptions.InsertWithAttributeException;
 import com.uff.sem_barreiras.exceptions.NotFoundException;
+import com.uff.sem_barreiras.model.Cidade;
 import com.uff.sem_barreiras.model.Empresa;
 
 import org.junit.jupiter.api.Assertions;
@@ -25,7 +30,7 @@ public class EmpresaServiceTest {
     @InjectMocks
     private EmpresaService empresaService;
 
-    //teste encontrar empresa
+    // ************************************************************************************************************** TESTE ENCONTRAR EMPRESA
     @Test
     public void testeEncontrarEmpresaComSucesso() throws NotFoundException
     {
@@ -58,9 +63,101 @@ public class EmpresaServiceTest {
         });
     }
 
-    //teste
+    // ************************************************************************************************************** TESTE CRIAR EMPRESA
+    @Test
+    public void testeCriarEmpresaComSucesso() throws InsertException, AlredyExistsException, InsertWithAttributeException
+    {
+        Empresa empresa = new Empresa();
+        empresa.setCidade( new Cidade());
+        empresa.setCnpj( "0000000000" );
+        empresa.setEmail( "email@email.com" );
+        empresa.setEndereco( "endereco" );
+        empresa.setNome( "nome" );
+        empresa.setTelefone( "0000000000" );
 
+        when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
 
+        Assertions.assertNotNull( this.empresaService.criarEmpresa(empresa) );
+    }
+
+    @Test
+    public void testeCriarEmpresaComEmailJaCadastrado() throws InsertException, AlredyExistsException, InsertWithAttributeException
+    {
+        Empresa empresa = new Empresa();
+
+        when(empresaDao.getIdByEmail(anyString())).thenReturn( 1 );
+
+        Assertions.assertThrows(AlredyExistsException.class, () -> {
+            this.empresaService.criarEmpresa(empresa);
+        });
+    }
+
+    @Test
+    public void testeCriarEmpresaNula() throws InsertException, AlredyExistsException, InsertWithAttributeException
+    {
+        Assertions.assertThrows(InsertException.class, () -> {
+            this.empresaService.criarEmpresa(null);
+        });
+    }
+
+    @Test
+    public void testeCriarEmpresa() throws InsertException, AlredyExistsException, InsertWithAttributeException
+    {
+        Assertions.assertThrows(InsertException.class, () -> {
+            this.empresaService.criarEmpresa(null);
+        });
+    }
+
+    @Test
+    public void testeCriarEmpresaSemCampoObrigatorio() throws InsertException, AlredyExistsException, InsertWithAttributeException
+    {
+        Empresa empresa = new Empresa();
+
+        when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
+        Assertions.assertThrows(InsertException.class, () -> {
+            this.empresaService.criarEmpresa( empresa );
+        });
+
+        empresa.setEmail( "email@email.com" );
+
+        when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.empresaService.criarEmpresa( empresa );
+        });
+
+        empresa.setNome( "nome");
+
+        when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.empresaService.criarEmpresa( empresa );
+        });
+
+        empresa.setCnpj( "0000000000" );
+
+        when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.empresaService.criarEmpresa( empresa );
+        });
+
+        empresa.setCidade( new Cidade());
+
+        when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.empresaService.criarEmpresa( empresa );
+        });
+        
+        empresa.setEndereco( "endereco" );
+
+        when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.empresaService.criarEmpresa( empresa );
+        });
+        
+        empresa.setTelefone( "0000000000" );
+
+        when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
+        Assertions.assertNotNull( this.empresaService.criarEmpresa(empresa) );
+    }
     
     
 }
