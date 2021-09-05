@@ -26,15 +26,12 @@ public class LoginService {
     {
         Integer id = this.empresaDao.getIdByEmail( login.getEmail() );
 
-        if( id == null )
+        if( id == null ) 
         {
             return new ResponseObject(false, "Empresa não cadastrada");
         }
 
-        Long milis = new Date().getTime();
-        controleLogin.put(id, milis); 
-
-        String cod = milis.toString().substring(milis.toString().length() - 4, milis.toString().length());
+        String cod = this.setCodigoControleLogin( id, new Date().getTime() );;
 
         String content = String.format("E-mail enviado devido a solicitação de login em Sem Barreiras\n \n Código de verificação: %s", cod );
 
@@ -48,6 +45,13 @@ public class LoginService {
         }
 
         return new ResponseObject(true, "Código de verificação enviado por e-mail | Código : " + cod );
+    }
+
+    //inserir mapeamento de código - criado para realização de testes
+    public String setCodigoControleLogin(Integer id, Long milis )
+    {
+        controleLogin.put(id, milis);
+        return milis.toString().substring(milis.toString().length() - 4, milis.toString().length());
     }
 
     //validação do código enviado por e-mail
