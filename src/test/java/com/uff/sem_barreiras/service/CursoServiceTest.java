@@ -1,10 +1,12 @@
 package com.uff.sem_barreiras.service;
 
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.uff.sem_barreiras.dao.CursoDao;
@@ -12,11 +14,9 @@ import com.uff.sem_barreiras.exceptions.NotFoundException;
 import com.uff.sem_barreiras.model.Curso;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
@@ -52,6 +52,25 @@ public class CursoServiceTest {
         Assertions.assertThrows(NotFoundException.class, () -> {this.cursoService.encontrarCurso(1);});
     }
 
-    
-    
+    @Test
+    public void vincularVagasComSucesso() {
+        Integer cursoId = 1;
+        List<Integer> idVagaList = new ArrayList<Integer>();
+        idVagaList.add(1);
+        
+        doNothing().when(cursoDao).vinculaCursoVaga(anyInt(), anyInt());
+
+        Assertions.assertTrue(cursoService.vingularVagas(cursoId, idVagaList));
+    }
+
+    @Test
+    public void vincularVagasComFracasso() {
+        Integer cursoId = 1;
+        List<Integer> idVagaList = new ArrayList<Integer>();
+        
+        doNothing().when(cursoDao).vinculaCursoVaga(anyInt(), anyInt());
+
+        Assertions.assertFalse(cursoService.vingularVagas(cursoId, idVagaList));
+    }
+
 }
