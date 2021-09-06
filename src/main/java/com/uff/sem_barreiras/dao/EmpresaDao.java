@@ -18,10 +18,7 @@ public interface EmpresaDao extends JpaRepository<Empresa, Integer>, JpaSpecific
     @Query(value = "SELECT id FROM empresa WHERE email = :email", nativeQuery = true)
     Integer getIdByEmail(@Param( "email") String email);
 
-    @Query(value = "SELECT * FROM vaga WHERE id_empresa =: id", nativeQuery = true)
-    List<Vaga> getVagas(@Param( "id") Integer id);
-
     @Modifying
-    @Query(value = "DELETE FROM vaga WHERE id_empresa =: id", nativeQuery = true)
+    @Query(value = "DELETE FROM vaga WHERE id_empresa = :id", nativeQuery = true)
     void deleteVagasDaEmpresa(@Param( "id" ) Integer id);
 }
