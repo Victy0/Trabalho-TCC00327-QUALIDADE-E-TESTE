@@ -79,7 +79,6 @@ public class VagaService {
     //encontrar vaga
     public Vaga encontrarVaga(Integer id) throws NotFoundException 
     {
-
         Vaga vaga = null;
 
         if(id == null)
