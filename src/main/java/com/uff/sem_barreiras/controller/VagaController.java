@@ -70,6 +70,18 @@ public class VagaController {
         return this.vagaService.realizarCandidatura(candidato.getNome(), candidato.getEmail(), candidato.getTelefone(), idVaga);
     }
 
+    @PostMapping("/vaga/forcar/deletar-passado")
+    public void forcarDeletarPassado(@RequestBody CandidatoDados candidato, @PathVariable(value = "id")Integer idVaga) throws NotFoundException
+    {
+        this.vagaService.deletarVagaPassado30Dias();
+    }
+
+    @PostMapping("/vaga/forcar/notificar-delete")
+    public void forcarnotificacaoDelete(@RequestBody CandidatoDados candidato, @PathVariable(value = "id")Integer idVaga) throws NotFoundException
+    {
+        this.vagaService.notificarVagaQueIraExperiar();
+    }
+
     @Autowired
     private VagaService vagaService;
 }

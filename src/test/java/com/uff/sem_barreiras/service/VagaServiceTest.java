@@ -1,10 +1,16 @@
 package com.uff.sem_barreiras.service;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.uff.sem_barreiras.dao.VagaDao;
@@ -270,6 +276,54 @@ public class VagaServiceTest {
         Assertions.assertEquals("Candidatura não pode ser realizada! Faltam informações do candidato", this.vagaService.realizarCandidatura("nome", null, null, 1).getMensagem());
 
         Assertions.assertEquals("Candidatura não pode ser realizada! Faltam informações do candidato", this.vagaService.realizarCandidatura("", "email", "telefone", 1).getMensagem());
+    }
+
+    // ************************************************************************************************************** TESTE CRON DELEÇÃO E NOTIFICAÇÃO
+    @Test
+    public void testeDeletar30DiasPassados() throws NotFoundException
+    {
+        List<Integer> mockList = new ArrayList<>();   
+        mockList.add(1);
+        mockList.add(3);
+        mockList.add(7);
+
+        when(vagaDao.recuperaVagaPassado30Dias()).thenReturn(mockList);
+
+        doNothing().when(vagaDao).deleteById(anyInt());
+
+        Vaga mockVaga = mock(Vaga.class);
+        when(vagaDao.findById(anyInt())).thenReturn(Optional.of(mockVaga));
+
+        vagaService.deletarVagaPassado30Dias();
+
+        verify(vagaDao, times(3)).deleteById(anyInt());
+    }
+
+    @Test
+    public void testeNotificacaoVagasQuaseExpirando() throws NotFoundException
+    {
+        List<Integer> mockList = new ArrayList<>();   
+        mockList.add(1);
+        mockList.add(3);
+        mockList.add(7);
+
+        when(vagaDao.recuperaVagaPassado27Dias()).thenReturn(mockList);
+
+        Empresa mockEmpresa = mock(Empresa.class);
+        when(mockEmpresa.getEmail()).thenReturn("email");
+
+        Vaga mockvaga = mock(Vaga.class);
+        when(mockvaga.getId()).thenReturn(1);
+        when(mockvaga.getEmpresa()).thenReturn( mockEmpresa );
+        when(mockvaga.getResumo()).thenReturn("resumo");
+
+        when(vagaDao.getOne(anyInt())).thenReturn(mockvaga);
+
+        doNothing().when(vagaDao).deleteById(anyInt());
+
+        vagaService.notificarVagaQueIraExperiar();
+
+        verify(emailService, times(3)).enviar(anyString(), anyString(), anyString());
     }
     
 }

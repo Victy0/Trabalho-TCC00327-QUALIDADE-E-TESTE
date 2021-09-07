@@ -216,7 +216,7 @@ public class VagaService {
 
     // deletar vagas expiradas
     @Scheduled( cron = "${cronSchedule.vagaDeletar:-}", zone = "${cronSchedule.timeZone:-}" )
-    private void deletarVagaPassado30Dias() throws NotFoundException
+    public void deletarVagaPassado30Dias() throws NotFoundException
     {
         List<Integer> idsParaRemover = this.vagaDao.recuperaVagaPassado30Dias();
 
@@ -231,7 +231,7 @@ public class VagaService {
 
     // informar vagas que irão expirar
     @Scheduled( cron = "${cronSchedule.vagaExpirar:-}", zone = "${cronSchedule.timeZone:-}" )
-    private void notificarVagaQueIraExperiar() throws NotFoundException
+    public void notificarVagaQueIraExperiar() throws NotFoundException
     {
         List<Integer> idsVagas = this.vagaDao.recuperaVagaPassado27Dias();
 
