@@ -9,6 +9,7 @@ import com.uff.sem_barreiras.dto.CandidatoDados;
 import com.uff.sem_barreiras.dto.ResponseObject;
 import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
+import com.uff.sem_barreiras.exceptions.InsertWithAttributeException;
 import com.uff.sem_barreiras.exceptions.NotFoundException;
 import com.uff.sem_barreiras.filter.VagaFilter;
 import com.uff.sem_barreiras.model.Vaga;
@@ -45,7 +46,7 @@ public class VagaController {
     }
 
     @PostMapping("/vaga") 
-    public Vaga cadastrar(@RequestBody final Vaga vaga  ) throws InsertException
+    public Vaga cadastrar(@RequestBody final Vaga vaga  ) throws InsertException, InsertWithAttributeException
     {
         return this.vagaService.criarVaga(vaga);
     }

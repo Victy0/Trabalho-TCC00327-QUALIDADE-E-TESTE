@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.uff.sem_barreiras.dao.VagaDao;
 import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
+import com.uff.sem_barreiras.exceptions.InsertWithAttributeException;
 import com.uff.sem_barreiras.exceptions.NotFoundException;
 import com.uff.sem_barreiras.model.Vaga;
 
@@ -29,10 +30,8 @@ public class VagaService {
         return base;
     }
 
-
-
     // criar vaga
-    public Vaga criarVaga(Vaga vaga) throws InsertException
+    public Vaga criarVaga(Vaga vaga) throws InsertException, InsertWithAttributeException
     {
         if(vaga == null)
         {
@@ -40,13 +39,15 @@ public class VagaService {
         }
         else
         {
-            if(vaga.getFuncao()==""||vaga.getRequisitosNecessarios()==""||vaga.getRequisitosDesejados()==""||vaga.getDuracaoVaga()==null)
+            String campoObrigatoriofaltando = this.campoObrigatorioFaltando(vaga, false);
+            if( campoObrigatoriofaltando != null)
             {
-                throw new InsertException( "a Vaga" );
+                throw new InsertWithAttributeException( "a Vaga", campoObrigatoriofaltando );
             }
             else
             {
                 vaga.setDataCriacao(new Date());
+                vaga.setDuracaoVaga( vaga.getDuracaoVaga() == null ? 30 : vaga.getDuracaoVaga() );
 
                 try
                 {
@@ -79,7 +80,6 @@ public class VagaService {
     //encontrar vaga
     public Vaga encontrarVaga(Integer id) throws NotFoundException 
     {
-
         Vaga vaga = null;
 
         if(id == null)
@@ -150,6 +150,52 @@ public class VagaService {
         this.emailService.enviar(vaga.getEmpresa().getEmail(), "SEM BARREIRAS INFORMA - Interesse em vaga publicada", content);
 
         return true;
+    }
+
+    // validar campos obrigatórios de empresa
+    public String campoObrigatorioFaltando(Vaga vaga, boolean alteracao)
+    {
+        if( alteracao && vaga.getId() == null )
+        {
+            return "id";
+        }
+
+        if( vaga.getEmpresa() == null )
+        {
+            return "empresa";
+        }
+
+        if( vaga.getResumo() == "" || vaga.getResumo() == null )
+        {
+            return "resumo";
+        }
+
+        if( vaga.getDescricao() == "" || vaga.getDescricao() == null )
+        {
+            return "descrição";
+        }
+        
+        if( vaga.getFuncao() == "" || vaga.getFuncao() == null )
+        {
+            return "função";
+        }
+
+        if( vaga.getNivel() == "" || vaga.getNivel() == null )
+        {
+            return "nível";
+        }
+
+        if( vaga.getArea() == null )
+        {
+            return "área de atuação";
+        }
+
+        if( vaga.getEscolaridade() == null )
+        {
+            return "escolaridade";
+        }
+
+        return null;
     }
 
     // deletar vagas expiradas
