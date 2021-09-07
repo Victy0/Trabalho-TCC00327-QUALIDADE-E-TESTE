@@ -18,25 +18,34 @@ import org.springframework.stereotype.Service;
 public class CidadeService {
 
     // listar todos os cidades
-    public Page<Cidade> listarCidades( Specification<Cidade> spec, final Pageable page ) {
+    public Page<Cidade> listarCidades( Specification<Cidade> spec, final Pageable page ) 
+    {
         return this.cidadeDao.findAll(spec, page);
     }
 
     // encontrar cidade pelo id
-    public Cidade encontrarCidade(Integer id) throws NotFoundException {
+    public Cidade encontrarCidade(Integer id) throws NotFoundException 
+    {
         Cidade cidade = null;
 
-        if (id == null) {
+        if (id == null) 
+        {
             throw new NotFoundException("Cidade", id);
-        } else {
+        } 
+        else 
+        {
             Optional<Cidade> cidadeOptional;
-            try{
+            try
+            {
                 cidadeOptional = this.cidadeDao.findById(id);
-            }catch(final Exception e ){
+            }
+            catch(final Exception e )
+            {
                 throw new NotFoundException("Cidade", id);
             }
 
-            if (!cidadeOptional.isPresent()) {
+            if (!cidadeOptional.isPresent()) 
+            {
                 throw new NotFoundException("Cidade", id);
             }
 
@@ -46,27 +55,41 @@ public class CidadeService {
     }
 
     //deletar  cidades por id
-    public void deletarCidade(Integer id) throws NotFoundException{  
-        if (id == null) {
+    public void deletarCidade(Integer id) throws NotFoundException
+    {  
+        if (id == null) 
+        {
             throw new NotFoundException("Cidade", id);
-        } else {
-            try{
+        }
+        else 
+        {
+            try
+            {
                 this.cidadeDao.deleteById(id);
-            }catch(final Exception e ){
+            }
+            catch(final Exception e )
+            {
                 throw new NotFoundException("Cidade", id);
             }
         }
     }
 
     // salvar cidade
-    public Cidade criarCidade(Cidade cidade) throws InsertException {
+    public Cidade criarCidade(Cidade cidade) throws InsertException 
+    {
         Cidade CidadeSalva = null;
-        if (cidade == null) {
+        if (cidade == null) 
+        {
             throw new InsertException("a Cidade");
-        } else {
-            try{
+        } 
+        else 
+        {
+            try
+            {
                 CidadeSalva = this.cidadeDao.save(cidade);
-            }catch(final Exception e){
+            }
+            catch(final Exception e)
+            {
                 throw new InsertException("a Cidade");
             }
         }
@@ -74,11 +97,16 @@ public class CidadeService {
     }
 
     // alterar cidade
-    public Cidade alterarCidade(Cidade cidade) throws IdNullException{
+    public Cidade alterarCidade(Cidade cidade) throws IdNullException
+    {
         Cidade cidadeSalva = null;
-        if(cidade.getId() == null){
+        
+        if(cidade.getId() == null)
+        {
             throw new IdNullException("Cidade");
-        } else {
+        } 
+        else 
+        {
             cidadeSalva = this.cidadeDao.save(cidade);
         }
 
