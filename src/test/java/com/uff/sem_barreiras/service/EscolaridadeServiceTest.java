@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import java.util.Optional;
@@ -34,5 +36,24 @@ public class EscolaridadeServiceTest {
         Assertions.assertNotNull(escolaridade.getId());
         Assertions.assertEquals(Integer.valueOf(1), escolaridade.getId());
 	}
+	
+	@Test
+	public void TesteEncontrarEscolaridadeComIdNulo() throws NotFoundException, IdNullException  {
+		
+      
+        Assertions.assertThrows(IdNullException.class, ()->{
+        	this.escolaridadeService.encontrarEscolaridade(null);
+        	});
+        }
+	
+	@Test
+    public void testeEncontrarEmpresaInexistente() throws NotFoundException 
+    {
+        when(escolaridadeDao.findById(anyInt())).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            this.escolaridadeService.encontrarEscolaridade(0);
+        });
+    }
 
 }
