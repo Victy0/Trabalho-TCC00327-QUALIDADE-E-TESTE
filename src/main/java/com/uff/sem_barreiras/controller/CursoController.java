@@ -43,16 +43,16 @@ public class CursoController {
     }
 
     @GetMapping("/curso/{id}")
-    public ResponseObject encontrarCurso(@PathVariable( value = "id" ) final Integer id)throws NotFoundException
+    public Curso encontrarCurso(@PathVariable( value = "id" ) final Integer id)throws NotFoundException
     {
-        this.cursoService.encontrarCurso(id);
-        return new ResponseObject(true, "Vaga removida com sucesso");
+        return this.cursoService.encontrarCurso(id);
     }
     
     @DeleteMapping("/curso/{id}")
-    public void deletarCurso(@PathVariable(value = "id")Integer id) throws NotFoundException
+    public ResponseObject deletarCurso(@PathVariable(value = "id")Integer id) throws NotFoundException
     {
         this.cursoService.deletarCurso(id);
+        return new ResponseObject(true, "Curso removido com sucesso");
     }
 
     @PutMapping("/curso/alterar")
