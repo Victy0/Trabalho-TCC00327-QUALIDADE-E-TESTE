@@ -84,6 +84,7 @@ public class EmpresaServiceTest {
     public void testeCriarEmpresaComEmailJaCadastrado() throws InsertException, AlredyExistsException, InsertWithAttributeException
     {
         Empresa empresa = new Empresa();
+        empresa.setEmail( "email@email.com" );
 
         when(empresaDao.getIdByEmail(anyString())).thenReturn( 1 );
 
