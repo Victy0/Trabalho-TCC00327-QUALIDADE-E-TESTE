@@ -102,10 +102,22 @@ public class EmpresaServiceTest {
     }
 
     @Test
-    public void testeCriarEmpresa() throws InsertException, AlredyExistsException, InsertWithAttributeException
+    public void testeCriarEmpresaErroJPA() throws InsertException, AlredyExistsException, InsertWithAttributeException
     {
+        Empresa empresa = new Empresa();
+        empresa.setCidade( new Cidade());
+        empresa.setCnpj( "0000000000" );
+        empresa.setEmail( "email@email.com" );
+        empresa.setEndereco( "endereco" );
+        empresa.setNome( "nome" );
+        empresa.setTelefone( "0000000000" );
+
+        when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
+
+        when(empresaDao.save(empresa)).thenThrow(RuntimeException.class);
+
         Assertions.assertThrows(InsertException.class, () -> {
-            this.empresaService.criarEmpresa(null);
+            this.empresaService.criarEmpresa(empresa);
         });
     }
 
