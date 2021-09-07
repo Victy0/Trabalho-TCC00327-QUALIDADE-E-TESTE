@@ -57,8 +57,7 @@ public class CidadeController {
     //mapeamento Delete para deletar cidade
     @DeleteMapping("/cidade/{id}")
     public ResponseObject deletarAreaAtuacao(@PathVariable(value = "id")Integer id) throws NotFoundException{
-        this.cidadeService.deletarCidade(id);
-        return new ResponseObject(true, " Cidade removida com sucesso");
+        return this.cidadeService.deletarCidade(id);
     }
 
     @Autowired

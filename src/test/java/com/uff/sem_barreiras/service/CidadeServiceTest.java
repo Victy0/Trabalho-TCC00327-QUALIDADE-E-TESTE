@@ -56,6 +56,19 @@ public class CidadeServiceTest {
             this.cidadeService.encontrarCidade(null);
         });
     }
+    
+    @Test
+    public void testeEncontrarCidadeInexistente() throws NotFoundException
+    {
+    	Cidade mockCidade = mock(Cidade.class);
+    	Optional<Cidade> optionalCidade = Optional.of(mockCidade);
+        when(cidadeDao.findById(anyInt())).thenReturn(optionalCidade.empty());
+
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            this.cidadeService.encontrarCidade(0);
+        });
+
+    }
 
     // ************************************************************************************************************** TESTE CRIAR CIDADE
     @Test
@@ -72,10 +85,72 @@ public class CidadeServiceTest {
     }
 
     @Test
-    public void testeCriarEmpresaNula() throws InsertException, AlredyExistsException, InsertWithAttributeException
+    public void testeCriarCNula() throws InsertException, AlredyExistsException, InsertWithAttributeException
     {
         Assertions.assertThrows(InsertException.class, () -> {
             this.cidadeService.criarCidade(null);
+        });
+    }
+    
+    // ************************************************************************************************************** TESTE ALTERAR CIDADE
+    @Test
+    public void testeAlterarCidadeComSucesso() throws IdNullException 
+    {
+        Cidade cidade = new Cidade();
+        cidade.setEstado( new Estado());
+        cidade.setId( 1 );
+        cidade.setNome( "nome" );
+
+        when(cidadeDao.save(cidade)).thenReturn(cidade);
+
+        Assertions.assertNotNull( this.cidadeService.alterarCidade( cidade) );
+    }
+
+    @Test
+    public void testeAlterarCidadeNula() throws IdNullException
+    {
+        Assertions.assertThrows(IdNullException.class, () -> {
+            this.cidadeService.alterarCidade(null);
+        });
+    }
+    
+    @Test
+    public void testeAlterarCidadeSemId() throws IdNullException
+    {
+    	 Cidade cidade = new Cidade();
+         cidade.setId( null );
+         
+        Assertions.assertThrows(IdNullException.class, () -> {
+            this.cidadeService.alterarCidade(cidade);
+        });
+    }
+    
+    // ************************************************************************************************************** TESTE DELETAR CIDADE
+    @Test
+    public void testeDeletarCidadeComSucesso() throws NotFoundException 
+    {
+    	Cidade mockCidade = mock(Cidade.class);
+        Optional<Cidade> optionalCidade = Optional.of(mockCidade);
+        when(cidadeDao.findById(1)).thenReturn(optionalCidade);
+        
+        Assertions.assertEquals ( "Cidade removida com sucesso", this.cidadeService.deletarCidade( 1 ).getMensagem() );
+    }
+
+    @Test
+    public void testeDeletarCidadeSemIndicarId() throws NotFoundException
+    {
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            this.cidadeService.deletarCidade(null);
+        });
+    }
+    
+    @Test
+    public void testeDeletarCidadeinexistente() throws NotFoundException
+    {
+        when(cidadeDao.findById(1)).thenReturn(null);
+    	
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            this.cidadeService.deletarCidade(0);
         });
     }
 
