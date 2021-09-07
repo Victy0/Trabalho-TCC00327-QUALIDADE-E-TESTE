@@ -54,23 +54,20 @@ public class VagaController {
     @DeleteMapping("/vaga/{id}")
     public ResponseObject deletar(@PathVariable(value = "id")Integer id) throws NotFoundException
     {
-        this.vagaService.deletarVaga(id);
-        return new ResponseObject(true, "Vaga removida com sucesso");
+        return this.vagaService.deletarVaga(id);
     }
 
     // mapeamento Put para alterar vaga
     @PutMapping("/vaga/alterar")
-    public Vaga alterarVaga(@RequestBody final Vaga vaga) throws NotFoundException, IdNullException,InsertException 
+    public Vaga alterarVaga(@RequestBody final Vaga vaga) throws NotFoundException, IdNullException,InsertException, InsertWithAttributeException 
     {
-        vaga.setDataCriacao(new Date());
         return this.vagaService.alterarVaga(vaga);
     }
 
     @PostMapping("/vaga/candidatar/{id}")
     public ResponseObject candidatarAVaga(@RequestBody CandidatoDados candidato, @PathVariable(value = "id")Integer idVaga) throws NotFoundException
     {
-        this.vagaService.realizarCandidatura(candidato.getNome(), candidato.getEmail(), candidato.getTelefone(), idVaga);
-        return new ResponseObject(true, "Candidatura realizada com sucesso");
+        return this.vagaService.realizarCandidatura(candidato.getNome(), candidato.getEmail(), candidato.getTelefone(), idVaga);
     }
 
     @Autowired

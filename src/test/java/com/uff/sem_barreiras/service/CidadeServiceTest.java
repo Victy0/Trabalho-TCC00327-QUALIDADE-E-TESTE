@@ -82,7 +82,7 @@ public class CidadeServiceTest {
     }
 
     @Test
-    public void testeCriarCNula() throws InsertException, AlredyExistsException, InsertWithAttributeException
+    public void testeCriarCidadeNula() throws InsertException, AlredyExistsException, InsertWithAttributeException
     {
         Assertions.assertThrows(InsertException.class, () -> {
             this.cidadeService.criarCidade(null);
@@ -142,9 +142,11 @@ public class CidadeServiceTest {
     }
     
     @Test
-    public void testeDeletarCidadeinexistente() throws NotFoundException
+    public void testeDeletarCidadeInexistente() throws NotFoundException
     {
-        when(cidadeDao.findById(1)).thenReturn(null);
+        Cidade mockCidade = mock(Cidade.class);
+    	Optional<Cidade> optionalCidade = Optional.of(mockCidade);
+        when(cidadeDao.findById(0)).thenReturn(optionalCidade.empty());
     	
         Assertions.assertThrows(NotFoundException.class, () -> {
             this.cidadeService.deletarCidade(0);

@@ -30,6 +30,9 @@ public class VagaServiceTest {
     @Mock
     private VagaDao vagaDao;
 
+    @Mock
+    private EmailService emailService;
+
     @InjectMocks
     private VagaService vagaService;
 
@@ -105,7 +108,7 @@ public class VagaServiceTest {
     }
 
     @Test
-    public void testeCriarEmpresaErroJPA() throws InsertException, InsertWithAttributeException
+    public void testeCriarVagaErroJPA() throws InsertException, InsertWithAttributeException
     {
         Vaga vaga = new Vaga();
         vaga.setEmpresa( new Empresa() );
@@ -171,6 +174,102 @@ public class VagaServiceTest {
         vaga.setEscolaridade( new Escolaridade() );
 
         Assertions.assertNotNull( this.vagaService.criarVaga(vaga) );
+    }
+
+    // ************************************************************************************************************** TESTE DELETE DE VAGA
+    @Test
+    public void testeDeletarVagaComSucesso() throws NotFoundException 
+    {
+        Vaga mockVaga = mock(Vaga.class);
+        when(vagaDao.findById(anyInt())).thenReturn(Optional.of(mockVaga));
+
+        Assertions.assertEquals("Vaga removida com sucesso", this.vagaService.deletarVaga(anyInt()).getMensagem());
+    }
+
+    @Test
+    public void testeDeletarVagaComIdNull() throws NotFoundException 
+    {
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            this.vagaService.deletarVaga(null);
+        });
+    }
+
+    @Test
+    public void testeDeletarVagaInexistente()
+    {
+    	Vaga mockVaga = mock(Vaga.class);
+    	Optional<Vaga> optionalVaga = Optional.of(mockVaga);
+        when(vagaDao.findById(anyInt())).thenReturn(optionalVaga.empty());
+    	
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            this.vagaService.deletarVaga(0);
+        });
+    }
+
+    // ************************************************************************************************************** TESTE ALTERAÇÃO DE VAGA
+    @Test
+    public void testeAlterarVagaComSucesso() throws IdNullException, InsertException, InsertWithAttributeException
+    {
+        Vaga vaga = new Vaga();
+        vaga.setId(1);
+        vaga.setEmpresa( new Empresa() );
+        vaga.setResumo( "resumo" );
+        vaga.setDescricao( "descricao" );
+        vaga.setArea( new AreaAtuacao() );
+        vaga.setFuncao( "funcao" );
+        vaga.setNivel( "nivel" );
+        vaga.setEscolaridade( new Escolaridade() );
+
+        Assertions.assertNotNull( this.vagaService.alterarVaga( vaga ) );
+    }
+
+    @Test
+    public void testeAlterarVagaSemId() throws IdNullException, InsertException, InsertWithAttributeException
+    {
+        Vaga vaga = new Vaga();
+        vaga.setId(null);
+
+        Assertions.assertThrows(IdNullException.class, () -> {
+            this.vagaService.alterarVaga(vaga);
+        });
+    }
+
+    @Test
+    public void testeAlterarVagaNula() throws IdNullException, InsertException, InsertWithAttributeException
+    {
+        Assertions.assertThrows(IdNullException.class, () -> {
+            this.vagaService.alterarVaga(null);
+        });
+    }
+
+    // OBSERVAÇÃO - teste dos campos obrigatórios mesmo que para criação
+
+    // ************************************************************************************************************** TESTE REALIZAR CANDIDATURA
+    @Test
+    public void testeRealizarCandidaturaComSucesso() throws NotFoundException
+    {
+        Empresa mockEmpresa = mock(Empresa.class);
+        when(mockEmpresa.getEmail()).thenReturn("email");
+
+        Vaga mockvaga = mock(Vaga.class);
+        when(mockvaga.getId()).thenReturn(1);
+        when(mockvaga.getEmpresa()).thenReturn( mockEmpresa );
+        when(mockvaga.getResumo()).thenReturn("resumo");
+
+        Optional<Vaga> optionalvaga = Optional.of(mockvaga);
+        when(vagaDao.findById(anyInt())).thenReturn(optionalvaga);
+
+        Assertions.assertEquals("Candidatura realizada com sucesso", this.vagaService.realizarCandidatura("nome", "email", "telefone", 1).getMensagem());
+    }
+
+    @Test
+    public void testeRealizarCandidaturaSemIndicarCamposNecessarios() throws NotFoundException
+    {
+        Assertions.assertEquals("Candidatura não pode ser realizada! Faltam informações do candidato", this.vagaService.realizarCandidatura(null, "email", "telefone", 1).getMensagem());
+
+        Assertions.assertEquals("Candidatura não pode ser realizada! Faltam informações do candidato", this.vagaService.realizarCandidatura("nome", null, null, 1).getMensagem());
+
+        Assertions.assertEquals("Candidatura não pode ser realizada! Faltam informações do candidato", this.vagaService.realizarCandidatura("", "email", "telefone", 1).getMensagem());
     }
     
 }
