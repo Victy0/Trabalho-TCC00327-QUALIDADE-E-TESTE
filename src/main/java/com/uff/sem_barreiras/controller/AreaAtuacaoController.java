@@ -38,7 +38,7 @@ public class AreaAtuacaoController {
 
     // mapeamento get para encontrar a area de atuação pelo id
     @GetMapping("/area/{id}")
-    public AreaAtuacao encontrarAreas(@PathVariable(value = "id")Integer id) throws NotFoundException{ 
+    public AreaAtuacao encontrarArea(@PathVariable(value = "id")Integer id) throws NotFoundException{ 
         return this.areaAtuacaoService.encontrarAreaAtuacao(id);
     }
 
@@ -57,7 +57,7 @@ public class AreaAtuacaoController {
 
      // mapeamento Put para alterar area de atuação
      @PutMapping("/area/alterar")
-     public AreaAtuacao alterarCidade(@RequestBody final AreaAtuacao area) throws NotFoundException, IdNullException {
+     public AreaAtuacao alterarAreaAtuacao(@RequestBody final AreaAtuacao area) throws NotFoundException, IdNullException {
          return this.areaAtuacaoService.alterarAreaAtuacao(area);
      }
 
