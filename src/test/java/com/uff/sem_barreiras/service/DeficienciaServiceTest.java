@@ -109,34 +109,39 @@ class DeficienciaServiceTest {
     
     // ************************************************************************************************************** TESTE ALTERAÇÃO DE EMPRESA
     @Test
-    public void testeAlterarDeficienciaComSucesso() throws InsertException, InsertWithAttributeException, IdNullException
+    public void testeAlterarDeficienciaComSucesso() throws InsertException, IdNullException
     {
-      Deficiencia def = new Deficiencia();
-        
+        Deficiencia def = new Deficiencia();
+
+        def.setId(1);
         def.setDescricao("deficiencia de fala");
         def.setNecessidadePisoTatil(false);
         def.setNecessidadeRampa(false);
         def.setNecessidadeSonora(false);
+
+        Deficiencia mockDeficiencia = mock(Deficiencia.class);
+        Optional<Deficiencia> optionalEmpresa = Optional.of(mockDeficiencia);
+        when(deficienciaDao.findById(anyInt())).thenReturn(optionalEmpresa);
        
         
         Assertions.assertNotNull( this.deficienciaService.alterarDeficiencia(def) );
     }
 
     @Test
-    public void testeAlterarDeficienciaSemId() throws InsertException, InsertWithAttributeException, IdNullException
+    public void testeAlterarDeficienciaSemId() throws InsertException, IdNullException
     {
         Deficiencia def = new Deficiencia();
         def.setId(null);
 
-        Assertions.assertThrows(IdNullException.class, () -> {
+        Assertions.assertThrows(InsertException.class, () -> {
             this.deficienciaService.alterarDeficiencia(def);
         });
     }
 
     @Test
-    public void testeAlterarDeficienciaNula() throws InsertException, AlredyExistsException, InsertWithAttributeException
+    public void testeAlterarDeficienciaNula() throws InsertException, InsertWithAttributeException
     {
-        Assertions.assertThrows(IdNullException.class, () -> {
+        Assertions.assertThrows(InsertException.class, () -> {
             this.deficienciaService.alterarDeficiencia(null);
         });
     }
