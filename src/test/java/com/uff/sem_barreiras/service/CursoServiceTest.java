@@ -53,6 +53,12 @@ public class CursoServiceTest {
     }
 
     @Test
+    public void encontrarCursoComErroDeBanco() throws NotFoundException {
+        when(cursoDao.findById(anyInt())).thenThrow(RuntimeException.class);
+        Assertions.assertThrows(NotFoundException.class, () -> {this.cursoService.encontrarCurso(1);});
+    }
+
+    @Test
     public void vincularVagasComSucesso() {
         Integer cursoId = 1;
         List<Integer> idVagaList = new ArrayList<Integer>();
@@ -67,6 +73,17 @@ public class CursoServiceTest {
     public void vincularVagasComFracasso() {
         Integer cursoId = 1;
         List<Integer> idVagaList = new ArrayList<Integer>();
+        
+        doNothing().when(cursoDao).vinculaCursoVaga(anyInt(), anyInt());
+
+        Assertions.assertFalse(cursoService.vingularVagas(cursoId, idVagaList));
+    }
+
+    @Test
+    public void vincularVagasComFracasso02() {
+        Integer cursoId = null;
+        List<Integer> idVagaList = new ArrayList<Integer>();
+        idVagaList.add(1);
         
         doNothing().when(cursoDao).vinculaCursoVaga(anyInt(), anyInt());
 
