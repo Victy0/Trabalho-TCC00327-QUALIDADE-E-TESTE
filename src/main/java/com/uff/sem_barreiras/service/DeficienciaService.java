@@ -81,10 +81,10 @@ public class DeficienciaService {
     // alterar deficiencia
     public Deficiencia alterarDeficiencia(Deficiencia deficiencia) throws IdNullException, InsertException{
         if(deficiencia == null) {
-        	 throw new InsertException("Deficiência");
+        	 throw new InsertException("a Deficiência");
         }else {
         	 if(!camposPreenchidos(deficiencia)) {
-        		 throw new InsertException("Deficiência");
+        		 throw new InsertException("a Deficiência");
              } 
             }
         this.deficienciaDao.save(deficiencia);

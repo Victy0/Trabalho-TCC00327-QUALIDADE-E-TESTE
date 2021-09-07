@@ -3,35 +3,35 @@ package com.uff.sem_barreiras.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+/*import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatter;*/
 import java.util.Properties;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
+//import javax.activation.DataHandler;
+//import javax.activation.DataSource;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Part;
+//import javax.mail.Multipart;
+//import javax.mail.Part;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
+//import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.MimeUtility;
-import javax.mail.util.ByteArrayDataSource;
+//import javax.mail.internet.MimeMultipart;
+//import javax.mail.internet.MimeUtility;
+//import javax.mail.util.ByteArrayDataSource;
 
 @Service
 public class EmailService {
-    
+    // PARA RECEBIMENTO DE E-MAIL
     /*private final String hostImap;
     private final String usernameImap;
     private final String passwordImap;
@@ -60,6 +60,7 @@ public class EmailService {
 		this.hostSmtp = hostSmtp;
 		this.portSmtp = portSmtp;
 
+		// PARA RECEBIMENTO DE E-MAIL
 		/*this.usernameImap = usernameImap;
 		this.passwordImap = passwordImap;
 		this.hostImap = hostImap;
@@ -110,7 +111,7 @@ public class EmailService {
 	}
 
     //não está em uso
-	private void sendWithAttachment(
+	/*private void sendWithAttachment(
 		final String recipient,
 		final String subject,
 		final String content,
@@ -184,6 +185,6 @@ public class EmailService {
 		{
 			e.printStackTrace();
 		}
-	}
+	}*/
 	
 }

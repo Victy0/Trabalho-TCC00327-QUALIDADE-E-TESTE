@@ -9,6 +9,7 @@ import com.uff.sem_barreiras.dto.CandidatoDados;
 import com.uff.sem_barreiras.dto.ResponseObject;
 import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
+import com.uff.sem_barreiras.exceptions.InsertWithAttributeException;
 import com.uff.sem_barreiras.exceptions.NotFoundException;
 import com.uff.sem_barreiras.filter.VagaFilter;
 import com.uff.sem_barreiras.model.Vaga;
@@ -45,7 +46,7 @@ public class VagaController {
     }
 
     @PostMapping("/vaga") 
-    public Vaga cadastrar(@RequestBody final Vaga vaga  ) throws InsertException
+    public Vaga cadastrar(@RequestBody final Vaga vaga  ) throws InsertException, InsertWithAttributeException
     {
         return this.vagaService.criarVaga(vaga);
     }
@@ -53,23 +54,32 @@ public class VagaController {
     @DeleteMapping("/vaga/{id}")
     public ResponseObject deletar(@PathVariable(value = "id")Integer id) throws NotFoundException
     {
-        this.vagaService.deletarVaga(id);
-        return new ResponseObject(true, "Vaga removida com sucesso");
+        return this.vagaService.deletarVaga(id);
     }
 
     // mapeamento Put para alterar vaga
     @PutMapping("/vaga/alterar")
-    public Vaga alterarVaga(@RequestBody final Vaga vaga) throws NotFoundException, IdNullException,InsertException 
+    public Vaga alterarVaga(@RequestBody final Vaga vaga) throws NotFoundException, IdNullException,InsertException, InsertWithAttributeException 
     {
-        vaga.setDataCriacao(new Date());
         return this.vagaService.alterarVaga(vaga);
     }
 
     @PostMapping("/vaga/candidatar/{id}")
     public ResponseObject candidatarAVaga(@RequestBody CandidatoDados candidato, @PathVariable(value = "id")Integer idVaga) throws NotFoundException
     {
-        this.vagaService.realizarCandidatura(candidato.getNome(), candidato.getEmail(), candidato.getTelefone(), idVaga);
-        return new ResponseObject(true, "Candidatura realizada com sucesso");
+        return this.vagaService.realizarCandidatura(candidato.getNome(), candidato.getEmail(), candidato.getTelefone(), idVaga);
+    }
+
+    @PostMapping("/vaga/forcar/deletar-passado")
+    public void forcarDeletarPassado(@RequestBody CandidatoDados candidato, @PathVariable(value = "id")Integer idVaga) throws NotFoundException
+    {
+        this.vagaService.deletarVagaPassado30Dias();
+    }
+
+    @PostMapping("/vaga/forcar/notificar-delete")
+    public void forcarnotificacaoDelete(@RequestBody CandidatoDados candidato, @PathVariable(value = "id")Integer idVaga) throws NotFoundException
+    {
+        this.vagaService.notificarVagaQueIraExperiar();
     }
 
     @Autowired
