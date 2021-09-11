@@ -1,6 +1,5 @@
 package com.uff.sem_barreiras.service;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -14,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.uff.sem_barreiras.dao.VagaDao;
-import com.uff.sem_barreiras.exceptions.AlredyExistsException;
 import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
 import com.uff.sem_barreiras.exceptions.InsertWithAttributeException;
@@ -68,9 +66,7 @@ public class VagaServiceTest {
     @Test
     public void testeEncontrarVagaInexistente() throws NotFoundException
     {
-    	Vaga mockvaga = mock(Vaga.class);
-    	Optional<Vaga> optionalvaga = Optional.of(mockvaga);
-        when(vagaDao.findById(anyInt())).thenReturn(optionalvaga.empty());
+        when(vagaDao.findById(anyInt())).thenReturn(Optional.empty());
 
         Assertions.assertThrows(NotFoundException.class, () -> {
             this.vagaService.encontrarVaga(0);
@@ -203,9 +199,7 @@ public class VagaServiceTest {
     @Test
     public void testeDeletarVagaInexistente()
     {
-    	Vaga mockVaga = mock(Vaga.class);
-    	Optional<Vaga> optionalVaga = Optional.of(mockVaga);
-        when(vagaDao.findById(anyInt())).thenReturn(optionalVaga.empty());
+        when(vagaDao.findById(anyInt())).thenReturn(Optional.empty());
     	
         Assertions.assertThrows(NotFoundException.class, () -> {
             this.vagaService.deletarVaga(0);

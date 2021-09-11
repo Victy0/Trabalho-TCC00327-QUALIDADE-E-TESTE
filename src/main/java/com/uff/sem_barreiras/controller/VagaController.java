@@ -1,6 +1,5 @@
 package com.uff.sem_barreiras.controller;
 
-import java.util.Date;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
