@@ -76,7 +76,7 @@ public class VagaController {
     }
 
     @PostMapping("/vaga/forcar/notificar-delete")
-    public void forcarnotificacaoDelete(@RequestBody CandidatoDados candidato, @PathVariable(value = "id")Integer idVaga) throws NotFoundException
+    public void forcarNotificacaoDelete(@RequestBody CandidatoDados candidato, @PathVariable(value = "id")Integer idVaga) throws NotFoundException
     {
         this.vagaService.notificarVagaQueIraExperiar();
     }

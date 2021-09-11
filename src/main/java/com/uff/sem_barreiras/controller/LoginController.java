@@ -53,6 +53,20 @@ public class LoginController {
         return new ResponseObject(false, "Nenhuma empresa com login efetuado");
     }
 
+    // mapeamento Post para forçar a limpeza da variável controle login
+    @PostMapping("/empresa/forcar/limpar-controlar-login")
+    public void forcarLimparControleLogin()
+    {
+        this.loginService.limpaControleLogin();
+    }
+
+    //mapeamento Post para foraçar a inclusão manual na variável controle login
+    @PostMapping("/empresa/forcar/login-manual")
+    public ResponseObject loginEmpresaManual(@RequestBody final LoginObject login ) throws IdNullException
+    {
+        return this.loginService.adicionarManualControleLogin( login.getEmail() );
+    }
+
     @Autowired
     LoginService loginService;
     

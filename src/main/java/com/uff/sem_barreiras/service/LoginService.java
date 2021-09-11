@@ -31,7 +31,7 @@ public class LoginService {
             return new ResponseObject(false, "Empresa não cadastrada");
         }
 
-        String cod = this.setCodigoControleLogin( id, new Date().getTime() );;
+        String cod = this.setCodigoControleLogin( id, new Date().getTime() );
 
         String content = String.format("E-mail enviado devido a solicitação de login em Sem Barreiras\n \n Código de verificação: %s", cod );
 
@@ -75,7 +75,7 @@ public class LoginService {
 
     // limpador dos códigos enviados e em espera no servido para validação
     @Scheduled( cron = "${cronSchedule.limpaControleLogin:-}", zone = "${cronSchedule.timeZone:-}" )
-    private void limpaControleLogin()
+    public void limpaControleLogin()
     {
         List<Integer> listaDeKeyParaRemover = new ArrayList<Integer>();
         Long milis = new Date().getTime();
@@ -93,12 +93,35 @@ public class LoginService {
         }
     }
 
+    // adicionar manualmente código para empresa
+    public ResponseObject adicionarManualControleLogin(String email)
+    {
+        Integer id = null;
+
+        try
+        {
+            id = this.empresaDao.getIdByEmail( email );
+            if( id == null)
+            {
+                return new ResponseObject( false, "Empresa não encontrada para email " + email );
+            }
+        }
+        catch( Exception e)
+        {
+            return new ResponseObject( false, "Empresa não encontrada para email " + email );
+        }
+
+        String cod = this.setCodigoControleLogin( id, new Date().getTime() );
+
+        return new ResponseObject( true, "Código gerado: " + cod );
+    }
+
     @Autowired
     private EmpresaDao empresaDao;
 
     @Autowired
     private EmailService emailService;
 
-    private Map<Integer, Long> controleLogin = new HashMap<Integer, Long>();
+    public Map<Integer, Long> controleLogin = new HashMap<Integer, Long>();
     
 }
