@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -82,16 +81,15 @@ public class EmpresaServiceTest {
     }
 
     @Test
-    @Disabled
     public void testeCriarEmpresaComEmailJaCadastrado() throws InsertException, AlredyExistsException, InsertWithAttributeException
     {
-        Empresa empresa = new Empresa();
-        empresa.setEmail( "email@email.com" );
+        Empresa mockEmpresa = mock(Empresa.class);
+        when(mockEmpresa.getEmail()).thenReturn("email");
 
         when(empresaDao.getIdByEmail(anyString())).thenReturn( 1 );
 
         Assertions.assertThrows(AlredyExistsException.class, () -> {
-            this.empresaService.criarEmpresa(empresa);
+            this.empresaService.criarEmpresa(mockEmpresa);
         });
     }
 
@@ -148,11 +146,6 @@ public class EmpresaServiceTest {
         Assertions.assertThrows(InsertWithAttributeException.class, () -> {
             this.empresaService.criarEmpresa( empresa );
         });
-
-        empresa.setCidade( new Cidade());
-        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
-            this.empresaService.criarEmpresa( empresa );
-        });
         
         empresa.setEndereco( "endereco" );
         Assertions.assertThrows(InsertWithAttributeException.class, () -> {
@@ -160,6 +153,12 @@ public class EmpresaServiceTest {
         });
         
         empresa.setTelefone( "0000000000" );
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.empresaService.criarEmpresa( empresa );
+        });
+
+        empresa.setCidade( new Cidade());
+
         Assertions.assertNotNull( this.empresaService.criarEmpresa(empresa) );
     }
 
@@ -209,10 +208,31 @@ public class EmpresaServiceTest {
     }
 
     @Test
-    public void testeAlterarEmpresaNula() throws InsertException, AlredyExistsException, InsertWithAttributeException
+    public void testeAlterarEmpresaNula() throws InsertException, InsertWithAttributeException, IdNullException
     {
         Assertions.assertThrows(IdNullException.class, () -> {
             this.empresaService.alterarEmpresa(null);
+        });
+    }
+
+    @Test
+    public void testeAlterarEmpresaErroJPA() throws InsertException, InsertWithAttributeException, IdNullException
+    {
+        Empresa mockEmpresa = mock(Empresa.class);
+        when(mockEmpresa.getEmail()).thenReturn("email");
+        when(mockEmpresa.getCidade()).thenReturn(new Cidade());
+        when(mockEmpresa.getCnpj()).thenReturn("0000000000");
+        when(mockEmpresa.getEndereco()).thenReturn("endereco");
+        when(mockEmpresa.getNome()).thenReturn("nome");
+        when(mockEmpresa.getTelefone()).thenReturn("0000000000");
+        when(mockEmpresa.getEmail()).thenReturn("email");
+
+        when(empresaDao.getIdByEmail(anyString())).thenReturn(null);
+
+        when(empresaDao.save(mockEmpresa)).thenThrow(RuntimeException.class);
+
+        Assertions.assertThrows(InsertException.class, () -> {
+            this.empresaService.criarEmpresa(mockEmpresa);
         });
     }
 

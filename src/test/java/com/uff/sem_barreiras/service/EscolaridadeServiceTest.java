@@ -56,4 +56,14 @@ public class EscolaridadeServiceTest {
         });
     }
 
+	@Test
+    public void testeEncontrarEmpresaErroJPA() throws NotFoundException 
+    {
+        when(escolaridadeDao.findById(anyInt())).thenThrow(RuntimeException.class);
+
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            this.escolaridadeService.encontrarEscolaridade(0);
+        });
+    }
+
 }

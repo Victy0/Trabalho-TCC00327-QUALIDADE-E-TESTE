@@ -4,11 +4,8 @@ import com.uff.sem_barreiras.dao.EmpresaDao;
 import com.uff.sem_barreiras.dto.LoginObject;
 import com.uff.sem_barreiras.exceptions.IdNullException;
 
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
