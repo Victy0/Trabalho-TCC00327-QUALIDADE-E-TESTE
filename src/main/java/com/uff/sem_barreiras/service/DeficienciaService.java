@@ -3,6 +3,7 @@ package com.uff.sem_barreiras.service;
 import java.util.Optional;
 
 import com.uff.sem_barreiras.dao.DeficienciaDao;
+import com.uff.sem_barreiras.dto.ResponseObject;
 import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
 import com.uff.sem_barreiras.exceptions.NotFoundException;
@@ -49,23 +50,26 @@ public class DeficienciaService {
 
     // salvar deficiencia
     public Deficiencia criarDeficiencia(Deficiencia deficiencia) throws InsertException {
-        if (deficiencia != null) {
-            if(camposPreenchidos(deficiencia)){
-                return this.deficienciaDao.save(deficiencia);
+        if (deficiencia == null) {
+        	throw new InsertException("a Deficiencia");
+           
             } else {
-                throw new InsertException("a Deficiencia");
-            }
-        } else {
-            throw new InsertException("a Deficiencia");
-        }
+            	 if(!camposPreenchidos(deficiencia)){
+                     
+                     throw new InsertException("a Deficiencia");
+            	 } 
+       }
+        
+        return this.deficienciaDao.save(deficiencia);
     }
 
     // deletar deficiencia
-    public void deletarDeficiencia(Integer id) throws NotFoundException {
+    public ResponseObject deletarDeficiencia(Integer id) throws NotFoundException {
         if (id != null) {
             Deficiencia deficiencia = encontrarDeficiencia(id);
             if (deficiencia != null){
                 this.deficienciaDao.deleteById(id);
+                return new ResponseObject(true, "Empresa removida com sucesso");
             } else {
                 throw new NotFoundException("Deficiência não encontrada com id: ", id);
             }
@@ -76,17 +80,17 @@ public class DeficienciaService {
 
     // alterar deficiencia
     public Deficiencia alterarDeficiencia(Deficiencia deficiencia) throws IdNullException, InsertException{
-        if(deficiencia != null) {
-            if(camposPreenchidos(deficiencia)) {
-                this.deficienciaDao.save(deficiencia);
-                return this.deficienciaDao.findById(deficiencia.getId()).get();
-            } else {
-                throw new InsertException("Deficiência");
+        if(deficiencia == null) {
+        	 throw new InsertException("a Deficiência");
+        }else {
+        	 if(!camposPreenchidos(deficiencia)) {
+        		 throw new InsertException("a Deficiência");
+             } 
             }
-        } else {
-            throw new InsertException("Deficiência");
+        this.deficienciaDao.save(deficiencia);
+        return this.deficienciaDao.findById(deficiencia.getId()).get();
         }
-    }
+    
 
     @Autowired
     private DeficienciaDao deficienciaDao;

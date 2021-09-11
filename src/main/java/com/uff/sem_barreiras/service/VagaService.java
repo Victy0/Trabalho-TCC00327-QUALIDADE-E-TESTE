@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 import com.uff.sem_barreiras.dao.VagaDao;
+import com.uff.sem_barreiras.dto.ResponseObject;
 import com.uff.sem_barreiras.exceptions.IdNullException;
 import com.uff.sem_barreiras.exceptions.InsertException;
+import com.uff.sem_barreiras.exceptions.InsertWithAttributeException;
 import com.uff.sem_barreiras.exceptions.NotFoundException;
 import com.uff.sem_barreiras.model.Vaga;
 
@@ -29,10 +31,8 @@ public class VagaService {
         return base;
     }
 
-
-
     // criar vaga
-    public Vaga criarVaga(Vaga vaga) throws InsertException
+    public Vaga criarVaga(Vaga vaga) throws InsertException, InsertWithAttributeException
     {
         if(vaga == null)
         {
@@ -40,13 +40,15 @@ public class VagaService {
         }
         else
         {
-            if(vaga.getFuncao()==""||vaga.getRequisitosNecessarios()==""||vaga.getRequisitosDesejados()==""||vaga.getDuracaoVaga()==null)
+            String campoObrigatoriofaltando = this.campoObrigatorioFaltando(vaga, false);
+            if( campoObrigatoriofaltando != null)
             {
-                throw new InsertException( "a Vaga" );
+                throw new InsertWithAttributeException( "a Vaga", campoObrigatoriofaltando );
             }
             else
             {
                 vaga.setDataCriacao(new Date());
+                vaga.setDuracaoVaga( vaga.getDuracaoVaga() == null ? 30 : vaga.getDuracaoVaga() );
 
                 try
                 {
@@ -64,9 +66,9 @@ public class VagaService {
     }
 
     //deletar vaga
-    public void deletarVaga(Integer id) throws NotFoundException
+    public ResponseObject deletarVaga(Integer id) throws NotFoundException
     {
-        if(id == null)
+        if(id == null || !vagaDao.findById(id).isPresent())
         {
             throw new NotFoundException("Vaga", id);
         }
@@ -74,6 +76,7 @@ public class VagaService {
         {
             this.vagaDao.deleteById(id);
         }
+        return new ResponseObject(true, "Vaga removida com sucesso");
     }
 
     //encontrar vaga
@@ -108,31 +111,45 @@ public class VagaService {
     }
 
     // alterar vaga
-    public Vaga alterarVaga(Vaga vaga) throws IdNullException,InsertException
+    public Vaga alterarVaga(Vaga vaga) throws IdNullException, InsertException, InsertWithAttributeException
     {
-        if(vaga.getId() == null)
+        if(vaga == null || vaga.getId() == null)
         {
             throw new IdNullException("Vaga");
-        }else{
-            if(vaga.getFuncao()==""||vaga.getRequisitosNecessarios()==""||vaga.getRequisitosDesejados()==""||vaga.getDuracaoVaga()==null){
-                throw new InsertException( "a Vaga" );
-            }else{
-        this.vagaDao.save(vaga);
-
-        return this.vagaDao.findById(vaga.getId()).get();
+        }
+        else
+        {
+            String campoObrigatoriofaltando = this.campoObrigatorioFaltando(vaga, true);
+            if( campoObrigatoriofaltando != null)
+            {
+                throw new InsertWithAttributeException( "a Vaga", campoObrigatoriofaltando );
+            }
+            else
+            {
+                vaga.setDataCriacao(new Date());
+                vaga.setDuracaoVaga( vaga.getDuracaoVaga() == null ? 30 : vaga.getDuracaoVaga() );
+                try
+                {
+                    this.vagaDao.save(vaga);
+                }
+                catch(Exception e)
+                {
+                    throw new InsertException( "a Vaga" );
+                }  
             }
         }
+        return vaga;
     }
 
     // realizar Candidatura à vaga
-    public Boolean realizarCandidatura(String nome, String email, String telefone, Integer idVaga) throws NotFoundException 
+    public ResponseObject realizarCandidatura(String nome, String email, String telefone, Integer idVaga) throws NotFoundException 
     {
-        Vaga vaga = this.encontrarVaga(idVaga);
-
-        if( nome == null || (email == null && telefone == null) )
+        if( (nome == null || nome == "") || (email == null && telefone == null) )
         {
-            return false;
+            return new ResponseObject(true, "Candidatura não pode ser realizada! Faltam informações do candidato");
         }
+
+        Vaga vaga = this.encontrarVaga(idVaga);
         
         if(telefone == null )
         {
@@ -148,12 +165,58 @@ public class VagaService {
 
         this.emailService.enviar(vaga.getEmpresa().getEmail(), "SEM BARREIRAS INFORMA - Interesse em vaga publicada", content);
 
-        return true;
+        return new ResponseObject(true, "Candidatura realizada com sucesso");
+    }
+
+    // validar campos obrigatórios de empresa
+    public String campoObrigatorioFaltando(Vaga vaga, boolean alteracao)
+    {
+        if( alteracao && vaga.getId() == null )
+        {
+            return "id";
+        }
+
+        if( vaga.getEmpresa() == null )
+        {
+            return "empresa";
+        }
+
+        if( vaga.getResumo() == "" || vaga.getResumo() == null )
+        {
+            return "resumo";
+        }
+
+        if( vaga.getDescricao() == "" || vaga.getDescricao() == null )
+        {
+            return "descrição";
+        }
+        
+        if( vaga.getFuncao() == "" || vaga.getFuncao() == null )
+        {
+            return "função";
+        }
+
+        if( vaga.getNivel() == "" || vaga.getNivel() == null )
+        {
+            return "nível";
+        }
+
+        if( vaga.getArea() == null )
+        {
+            return "área de atuação";
+        }
+
+        if( vaga.getEscolaridade() == null )
+        {
+            return "escolaridade";
+        }
+
+        return null;
     }
 
     // deletar vagas expiradas
     @Scheduled( cron = "${cronSchedule.vagaDeletar:-}", zone = "${cronSchedule.timeZone:-}" )
-    private void deletarVagaPassado30Dias() throws NotFoundException
+    public void deletarVagaPassado30Dias() throws NotFoundException
     {
         List<Integer> idsParaRemover = this.vagaDao.recuperaVagaPassado30Dias();
 
@@ -168,7 +231,7 @@ public class VagaService {
 
     // informar vagas que irão expirar
     @Scheduled( cron = "${cronSchedule.vagaExpirar:-}", zone = "${cronSchedule.timeZone:-}" )
-    private void notificarVagaQueIraExperiar() throws NotFoundException
+    public void notificarVagaQueIraExperiar() throws NotFoundException
     {
         List<Integer> idsVagas = this.vagaDao.recuperaVagaPassado27Dias();
 
