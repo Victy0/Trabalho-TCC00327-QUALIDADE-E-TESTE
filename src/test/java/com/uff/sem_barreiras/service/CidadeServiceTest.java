@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
@@ -65,6 +66,17 @@ public class CidadeServiceTest {
 
     }
 
+    @Test
+    public void testeEncontrarCidadeErroJPA() throws NotFoundException
+    {
+        when(cidadeDao.findById(anyInt())).thenThrow(RuntimeException.class);
+
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            this.cidadeService.encontrarCidade(0);
+        });
+
+    }
+
     // ************************************************************************************************************** TESTE CRIAR CIDADE
     @Test
     public void testeCriarCidadeComSucesso() throws InsertException 
@@ -84,6 +96,18 @@ public class CidadeServiceTest {
     {
         Assertions.assertThrows(InsertException.class, () -> {
             this.cidadeService.criarCidade(null);
+        });
+    }
+
+    @Test
+    public void testeCriarCidadeErroJPA() throws InsertException, AlredyExistsException, InsertWithAttributeException
+    {
+        Cidade mockCidade = mock(Cidade.class);
+
+        when(cidadeDao.save(mockCidade)).thenThrow(RuntimeException.class);
+
+        Assertions.assertThrows(InsertException.class, () -> {
+            this.cidadeService.criarCidade( mockCidade );
         });
     }
     
@@ -142,11 +166,26 @@ public class CidadeServiceTest {
     @Test
     public void testeDeletarCidadeInexistente() throws NotFoundException
     {
-        when(cidadeDao.findById(0)).thenReturn(Optional.empty());
+        when(cidadeDao.findById(anyInt())).thenReturn(Optional.empty());
     	
         Assertions.assertThrows(NotFoundException.class, () -> {
             this.cidadeService.deletarCidade(0);
         });
+    }
+
+    @Test
+    public void testeDeletarCidadeErroJPA() throws NotFoundException
+    {
+        Mockito.doThrow(RuntimeException.class).when(cidadeDao).deleteById(anyInt());
+
+        Cidade mockCidade = mock(Cidade.class);
+        Optional<Cidade> optionalCidade = Optional.of(mockCidade);
+        when(cidadeDao.findById(anyInt())).thenReturn(optionalCidade);
+
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            this.cidadeService.deletarCidade(0);
+        });
+
     }
 
 }
