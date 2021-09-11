@@ -57,9 +57,7 @@ public class CidadeServiceTest {
     @Test
     public void testeEncontrarCidadeInexistente() throws NotFoundException
     {
-    	Cidade mockCidade = mock(Cidade.class);
-    	Optional<Cidade> optionalCidade = Optional.of(mockCidade);
-        when(cidadeDao.findById(anyInt())).thenReturn(optionalCidade.empty());
+        when(cidadeDao.findById(anyInt())).thenReturn(Optional.empty());
 
         Assertions.assertThrows(NotFoundException.class, () -> {
             this.cidadeService.encontrarCidade(0);
@@ -144,9 +142,7 @@ public class CidadeServiceTest {
     @Test
     public void testeDeletarCidadeInexistente() throws NotFoundException
     {
-        Cidade mockCidade = mock(Cidade.class);
-    	Optional<Cidade> optionalCidade = Optional.of(mockCidade);
-        when(cidadeDao.findById(0)).thenReturn(optionalCidade.empty());
+        when(cidadeDao.findById(0)).thenReturn(Optional.empty());
     	
         Assertions.assertThrows(NotFoundException.class, () -> {
             this.cidadeService.deletarCidade(0);

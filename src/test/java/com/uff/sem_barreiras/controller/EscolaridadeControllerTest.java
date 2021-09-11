@@ -9,7 +9,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.uff.sem_barreiras.service.EmpresaService;
 import com.uff.sem_barreiras.service.EscolaridadeService;
 
 @WebMvcTest(EscolaridadeController.class)
