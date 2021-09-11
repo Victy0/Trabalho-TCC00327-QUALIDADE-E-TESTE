@@ -1,5 +1,6 @@
 package com.uff.sem_barreiras.service;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -26,7 +27,7 @@ public class EstadoServiceTest {
     private EstadoService estadoService;
 
 	@Test
-	public void encontrarEstadoTest() throws NotFoundException, IdNullException {
+	public void testeEncontrarEstadoComSucesso() throws NotFoundException, IdNullException {
 		Estado mockEstado = mock(Estado.class);
 		when(mockEstado.getId()).thenReturn(1);
 		Optional<Estado> optionalEstado = Optional.of(mockEstado);
@@ -36,5 +37,35 @@ public class EstadoServiceTest {
 		Assertions.assertNotNull(estado.getId());
 		Assertions.assertEquals(Integer.valueOf(1), estado.getId());
 	}
+
+	@Test
+    public void testeEncontrarEstadoComIdNull() throws NotFoundException, IdNullException 
+    {
+        Assertions.assertThrows(IdNullException.class, () -> {
+            this.estadoService.encontrarEstado(null);
+        });
+    }
+    
+    @Test
+    public void testeEncontrarEstadoInexistente() throws NotFoundException, IdNullException
+    {
+		when(estadoDao.findById(anyInt())).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            this.estadoService.encontrarEstado(0);
+        });
+
+    }
+
+	@Test
+    public void testeEncontrarEstadoErroJPA() throws NotFoundException
+    {
+        when(estadoDao.findById(anyInt())).thenThrow(RuntimeException.class);
+
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            this.estadoService.encontrarEstado(0);
+        });
+
+    }
 
 }
