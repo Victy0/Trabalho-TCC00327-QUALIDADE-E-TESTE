@@ -57,4 +57,10 @@ public class AreaAtuacaoControllerTest {
 		when(areaAtuacaoService.encontrarAreaAtuacao(anyInt())).thenReturn(new AreaAtuacao());
         this.mockMvc.perform(get("/area/1")).andExpect(MockMvcResultMatchers.status().isOk());
 	}
+	
+	@Test
+	void encontrarListaAreaComSucesso() throws Exception {
+		when(areaAtuacaoService.encontrarAreaAtuacao(anyInt())).thenReturn(new AreaAtuacao());
+        this.mockMvc.perform(get("/area")).andExpect(MockMvcResultMatchers.status().isOk());
+	}
 }

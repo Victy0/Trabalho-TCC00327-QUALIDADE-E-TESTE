@@ -1,16 +1,24 @@
 package com.uff.sem_barreiras.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uff.sem_barreiras.dto.ResponseObject;
+import com.uff.sem_barreiras.exceptions.NotFoundException;
 import com.uff.sem_barreiras.model.Deficiencia;
+import com.uff.sem_barreiras.model.Empresa;
 import com.uff.sem_barreiras.service.DeficienciaService;
 
 
@@ -52,6 +60,19 @@ class DeficienciaControllerTest {
     	        .contentType("application/json")
     	        .content(objectMapper.writeValueAsString(def)))
     	        .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+    
+    @Test
+    public void VerificarEndpointAlteracaoCidade() throws Exception {
+        this.mockMvc.perform(put("/deficiencia/alterar")
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(new Deficiencia())))
+            .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+    
+    @Test
+    public void verificarEndpointDeleteCidadePorId() throws Exception {
+        this.mockMvc.perform(delete("/deficiencia/1")).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
 }

@@ -30,6 +30,12 @@ public class CursoControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+    
+    @Test
+    public void encontrarlistaCursoComSucesso() throws Exception {
+        when(cursoService.encontrarCurso(anyInt())).thenReturn(new Curso());
+        this.mockMvc.perform(get("/curso")).andExpect(MockMvcResultMatchers.status().isOk());
+    }
 
     @Test
     public void encontrarCursoComSucesso() throws Exception {
