@@ -70,13 +70,13 @@ public class VagaController {
     }
 
     @PostMapping("/vaga/forcar/deletar-passado")
-    public void forcarDeletarPassado(@RequestBody CandidatoDados candidato, @PathVariable(value = "id")Integer idVaga) throws NotFoundException
+    public void forcarDeletarPassado() throws NotFoundException
     {
         this.vagaService.deletarVagaPassado30Dias();
     }
 
     @PostMapping("/vaga/forcar/notificar-delete")
-    public void forcarNotificacaoDelete(@RequestBody CandidatoDados candidato, @PathVariable(value = "id")Integer idVaga) throws NotFoundException
+    public void forcarNotificacaoDelete() throws NotFoundException
     {
         this.vagaService.notificarVagaQueIraExperiar();
     }

@@ -70,18 +70,12 @@ class VagaControllerTest {
 	    
 	    @Test
 	    public void VerificarEndpointDeletarPassado() throws Exception {
-	        this.mockMvc.perform(post("/vaga/forcar/deletar-passado")
-	            .contentType("application/json")
-	            .content(objectMapper.writeValueAsString(new Vaga())))
-	            .andExpect(MockMvcResultMatchers.status().isOk());
+	        this.mockMvc.perform(post("/vaga/forcar/deletar-passado")).andExpect(MockMvcResultMatchers.status().isOk());
 	    }
 	    
 	    @Test
 	    public void VerificarEndpointNotificarDelete() throws Exception {
-	        this.mockMvc.perform(post("/vaga/forcar/notificar-delete")
-	            .contentType("application/json")
-	            .content(objectMapper.writeValueAsString(new Vaga())))
-	            .andExpect(MockMvcResultMatchers.status().isOk());
+	        this.mockMvc.perform(post("/vaga/forcar/notificar-delete")).andExpect(MockMvcResultMatchers.status().isOk());
 	    }
 
 }

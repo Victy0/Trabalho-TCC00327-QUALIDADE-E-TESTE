@@ -43,7 +43,7 @@ public class LoginController {
 
     // mapeamento Post para fazer logout
     @PostMapping("/empresa/logout")
-    public ResponseObject logoutnEmpresa( HttpSession session  )
+    public ResponseObject logoutEmpresa( HttpSession session  )
     {
         if(session.getAttribute("login") != null)
         {
