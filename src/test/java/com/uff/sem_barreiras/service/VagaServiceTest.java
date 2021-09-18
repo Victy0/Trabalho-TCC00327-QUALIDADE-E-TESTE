@@ -3,12 +3,14 @@ package com.uff.sem_barreiras.service;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,6 +101,9 @@ public class VagaServiceTest {
         vaga.setEscolaridade( new Escolaridade() );
 
         Assertions.assertNotNull( this.vagaService.criarVaga( vaga ) );
+        //new Date() pega a data que inicia o teste por isso precisa ser maior
+        Assertions.assertNotNull( this.vagaService.criarVaga( vaga ).getDataCriacao().getTime() > new Date().getTime() );
+        Assertions.assertTrue( this.vagaService.criarVaga( vaga ).getDuracaoVaga() == 30 );
     }
 
     @Test
@@ -143,7 +148,19 @@ public class VagaServiceTest {
             this.vagaService.criarVaga( vaga );
         });
 
+        vaga.setResumo( "" );
+
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.vagaService.criarVaga( vaga );
+        });
+
         vaga.setResumo( "resumo" );
+
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.vagaService.criarVaga( vaga );
+        });
+
+        vaga.setDescricao( "" );
 
         Assertions.assertThrows(InsertWithAttributeException.class, () -> {
             this.vagaService.criarVaga( vaga );
@@ -155,7 +172,19 @@ public class VagaServiceTest {
             this.vagaService.criarVaga( vaga );
         });
 
+        vaga.setFuncao( "" );
+
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.vagaService.criarVaga( vaga );
+        });
+
         vaga.setFuncao( "funcao" );
+
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.vagaService.criarVaga( vaga );
+        });
+
+        vaga.setNivel( "" );
 
         Assertions.assertThrows(InsertWithAttributeException.class, () -> {
             this.vagaService.criarVaga( vaga );
@@ -176,6 +205,10 @@ public class VagaServiceTest {
         vaga.setEscolaridade( new Escolaridade() );
 
         Assertions.assertNotNull( this.vagaService.criarVaga(vaga) );
+
+        //new Date() pega a data que inicia o teste por isso precisa ser maior
+        Assertions.assertNotNull( this.vagaService.criarVaga( vaga ).getDataCriacao().getTime() > new Date().getTime() );
+        Assertions.assertTrue( this.vagaService.criarVaga( vaga ).getDuracaoVaga() == 30 );
     }
 
     // ************************************************************************************************************** TESTE DELETE DE VAGA
@@ -218,9 +251,13 @@ public class VagaServiceTest {
         vaga.setArea( new AreaAtuacao() );
         vaga.setFuncao( "funcao" );
         vaga.setNivel( "nivel" );
+        vaga.setDuracaoVaga( 26 );
         vaga.setEscolaridade( new Escolaridade() );
 
         Assertions.assertNotNull( this.vagaService.alterarVaga( vaga ) );
+        //new Date() pega a data que inicia o teste por isso precisa ser maior
+        Assertions.assertNotNull( this.vagaService.alterarVaga( vaga ).getDataCriacao().getTime() > new Date().getTime() );
+        Assertions.assertTrue( this.vagaService.alterarVaga( vaga ).getDuracaoVaga() == 26 );
     }
 
     @Test
@@ -242,7 +279,104 @@ public class VagaServiceTest {
         });
     }
 
-    // OBSERVAÇÃO - teste dos campos obrigatórios mesmo que para criação
+    @Test
+    public void testeAlterarVagaErroJPA() throws InsertException, InsertWithAttributeException
+    {
+        Vaga vaga = new Vaga();
+        vaga.setId(1);
+        vaga.setEmpresa( new Empresa() );
+        vaga.setResumo( "resumo" );
+        vaga.setDescricao( "descricao" );
+        vaga.setArea( new AreaAtuacao() );
+        vaga.setFuncao( "funcao" );
+        vaga.setNivel( "nivel" );
+        vaga.setEscolaridade( new Escolaridade() );
+
+        when(vagaDao.save(vaga)).thenThrow(RuntimeException.class);
+
+        Assertions.assertThrows(InsertException.class, () -> {
+            this.vagaService.alterarVaga(vaga);
+        });
+    }
+
+    @Test
+    public void testeAlterarVagaSemCampoObrigatorio() throws InsertException, InsertWithAttributeException, IdNullException
+    {
+        Vaga vaga = new Vaga();
+        vaga.setId(1);
+
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.vagaService.alterarVaga( vaga );
+        });
+
+        vaga.setEmpresa( new Empresa() );
+
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.vagaService.alterarVaga( vaga );
+        });
+
+        vaga.setResumo( "" );
+
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.vagaService.alterarVaga( vaga );
+        });
+
+        vaga.setResumo( "resumo" );
+
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.vagaService.alterarVaga( vaga );
+        });
+
+        vaga.setDescricao( "" );
+
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.vagaService.alterarVaga( vaga );
+        });
+
+        vaga.setDescricao( "descricao" );
+
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.vagaService.alterarVaga( vaga );
+        });
+
+        vaga.setFuncao( "" );
+
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.vagaService.alterarVaga( vaga );
+        });
+
+        vaga.setFuncao( "funcao" );
+
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.vagaService.alterarVaga( vaga );
+        });
+
+        vaga.setNivel( "" );
+
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.vagaService.alterarVaga( vaga );
+        });
+
+        vaga.setNivel( "nivel" );
+
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.vagaService.alterarVaga( vaga );
+        });
+
+        vaga.setArea( new AreaAtuacao() );
+
+        Assertions.assertThrows(InsertWithAttributeException.class, () -> {
+            this.vagaService.alterarVaga( vaga );
+        });
+
+        vaga.setEscolaridade( new Escolaridade() );
+
+        Assertions.assertNotNull( this.vagaService.alterarVaga(vaga) );
+
+        //new Date() pega a data que inicia o teste por isso precisa ser maior
+        Assertions.assertNotNull( this.vagaService.alterarVaga( vaga ).getDataCriacao().getTime() > new Date().getTime() );
+        Assertions.assertTrue( this.vagaService.alterarVaga( vaga ).getDuracaoVaga() == 30 );
+    }
 
     // ************************************************************************************************************** TESTE REALIZAR CANDIDATURA
     @Test
@@ -270,6 +404,44 @@ public class VagaServiceTest {
         Assertions.assertEquals("Candidatura não pode ser realizada! Faltam informações do candidato", this.vagaService.realizarCandidatura("nome", null, null, 1).getMensagem());
 
         Assertions.assertEquals("Candidatura não pode ser realizada! Faltam informações do candidato", this.vagaService.realizarCandidatura("", "email", "telefone", 1).getMensagem());
+    }
+
+    @Test
+    public void testeRealizarCandidaturaComSucessoSemInformarTodosCamposDeIdentificacao() throws NotFoundException
+    {
+        Empresa mockEmpresa = mock(Empresa.class);
+        when(mockEmpresa.getEmail()).thenReturn("email");
+
+        Vaga mockvaga = mock(Vaga.class);
+        when(mockvaga.getId()).thenReturn(1);
+        when(mockvaga.getEmpresa()).thenReturn( mockEmpresa );
+        when(mockvaga.getResumo()).thenReturn("resumo");
+
+        Optional<Vaga> optionalvaga = Optional.of(mockvaga);
+        when(vagaDao.findById(anyInt())).thenReturn(optionalvaga);
+
+        Assertions.assertEquals("Candidatura realizada com sucesso", this.vagaService.realizarCandidatura("nome", null, "telefone", 1).getMensagem());
+
+        Assertions.assertEquals("Candidatura realizada com sucesso", this.vagaService.realizarCandidatura("nome", "email", null, 1).getMensagem());
+    }
+
+    @Test
+    public void testeRealizarCandidaturaComFalha() throws NotFoundException
+    {
+        Empresa mockEmpresa = mock(Empresa.class);
+        when(mockEmpresa.getEmail()).thenReturn("email");
+
+        Vaga mockvaga = mock(Vaga.class);
+        when(mockvaga.getId()).thenReturn(1);
+        when(mockvaga.getEmpresa()).thenReturn( mockEmpresa );
+        when(mockvaga.getResumo()).thenReturn("resumo");
+
+        Optional<Vaga> optionalvaga = Optional.of(mockvaga);
+        when(vagaDao.findById(anyInt())).thenReturn(optionalvaga);
+
+        doThrow( RuntimeException.class ).when(emailService).enviar(anyString(), anyString(), anyString());
+
+        Assertions.assertEquals("Candidatura não realizada. Tente novamente", this.vagaService.realizarCandidatura("nome", "email", "telefone", 1).getMensagem());
     }
 
     // ************************************************************************************************************** TESTE CRON DELEÇÃO E NOTIFICAÇÃO

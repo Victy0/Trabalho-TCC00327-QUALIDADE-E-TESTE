@@ -163,7 +163,14 @@ public class VagaService {
 
         String content = String.format("O candidato %s demonstrou interesse pela vaga \"%s\" disponibilizada.\nE-mail do candidato: %s\nTelefone do candidato: %s", nome, vaga.getResumo(), email, telefone );
 
-        this.emailService.enviar(vaga.getEmpresa().getEmail(), "SEM BARREIRAS INFORMA - Interesse em vaga publicada", content);
+        try
+        {
+            this.emailService.enviar(vaga.getEmpresa().getEmail(), "SEM BARREIRAS INFORMA - Interesse em vaga publicada", content);
+        }
+        catch( Exception e )
+        {
+            return new ResponseObject(false, "Candidatura não realizada. Tente novamente");
+        }
 
         return new ResponseObject(true, "Candidatura realizada com sucesso");
     }
