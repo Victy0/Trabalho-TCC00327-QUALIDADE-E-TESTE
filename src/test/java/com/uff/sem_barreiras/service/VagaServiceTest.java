@@ -399,11 +399,11 @@ public class VagaServiceTest {
     @Test
     public void testeRealizarCandidaturaSemIndicarCamposNecessarios() throws NotFoundException
     {
-        Assertions.assertEquals("Candidatura não pode ser realizada! Faltam informações do candidato", this.vagaService.realizarCandidatura(null, "email", "telefone", 1).getMensagem());
+        Assertions.assertEquals("Candidatura não pode ser realizada!", this.vagaService.realizarCandidatura(null, "email", "telefone", 1).getMensagem().substring(0, 35));
 
-        Assertions.assertEquals("Candidatura não pode ser realizada! Faltam informações do candidato", this.vagaService.realizarCandidatura("nome", null, null, 1).getMensagem());
+        Assertions.assertEquals("Candidatura não pode ser realizada!", this.vagaService.realizarCandidatura("nome", null, null, 1).getMensagem().substring(0, 35));
 
-        Assertions.assertEquals("Candidatura não pode ser realizada! Faltam informações do candidato", this.vagaService.realizarCandidatura("", "email", "telefone", 1).getMensagem());
+        Assertions.assertEquals("Candidatura não pode ser realizada!", this.vagaService.realizarCandidatura("", "email", "telefone", 1).getMensagem().substring(0, 35));
     }
 
     @Test

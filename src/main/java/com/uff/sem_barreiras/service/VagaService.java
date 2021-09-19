@@ -144,9 +144,14 @@ public class VagaService {
     // realizar Candidatura à vaga
     public ResponseObject realizarCandidatura(String nome, String email, String telefone, Integer idVaga) throws NotFoundException 
     {
-        if( (nome == null || nome == "") || (email == null && telefone == null) )
+        if( (nome == null || nome == "") )
         {
-            return new ResponseObject(true, "Candidatura não pode ser realizada! Faltam informações do candidato");
+            return new ResponseObject(true, "Candidatura não pode ser realizada! Faltam informação do nome candidato");
+        }
+
+        if( (email == null && telefone == null) )
+        {
+            return new ResponseObject(true, "Candidatura não pode ser realizada! Faltam informações de e-mail ou telefone do candidato");
         }
 
         Vaga vaga = this.encontrarVaga(idVaga);

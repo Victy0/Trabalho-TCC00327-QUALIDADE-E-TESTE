@@ -2,6 +2,7 @@ package com.uff.sem_barreiras.service;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,6 +62,17 @@ public class EmpresaServiceTest {
         Assertions.assertThrows(NotFoundException.class, () -> {
             this.empresaService.encontrarEmpresa(0);
         });
+    }
+
+    @Test
+    public void testeEncontrarEmpresaErroJPA() throws NotFoundException
+    {
+        when(empresaDao.findById(anyInt())).thenThrow(RuntimeException.class);
+
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            this.empresaService.encontrarEmpresa(0);
+        });
+
     }
 
     // ************************************************************************************************************** TESTE CRIAR EMPRESA
@@ -178,6 +190,28 @@ public class EmpresaServiceTest {
         Assertions.assertThrows(NotFoundException.class, () -> {
             this.empresaService.deletarEmpresa(null);
         });
+    }
+
+    @Test
+    public void testeDeletarVagaErroJPA() throws NotFoundException
+    {
+        doThrow( RuntimeException.class ).when(empresaDao).deleteVagasDaEmpresa(anyInt());
+
+        Assertions.assertThrows( NotFoundException.class, () -> {
+            this.empresaService.deletarEmpresa(0);
+        });
+
+    }
+
+    @Test
+    public void testeDeletarVagaErroJPA2() throws NotFoundException
+    {
+        doThrow( RuntimeException.class ).when(empresaDao).deleteById(anyInt());
+
+        Assertions.assertThrows( NotFoundException.class, () -> {
+            this.empresaService.deletarEmpresa(0);
+        });
+
     }
     
     // ************************************************************************************************************** TESTE ALTERAÇÃO DE EMPRESA

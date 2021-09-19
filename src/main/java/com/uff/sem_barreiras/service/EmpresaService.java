@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 @Service
 public class EmpresaService {
 
@@ -91,6 +93,7 @@ public class EmpresaService {
     }
 
     // deletar empresa
+    @Transactional
     public ResponseObject deletarEmpresa(Integer id) throws NotFoundException 
     {
         if(id == null || !empresaDao.findById(id).isPresent())
